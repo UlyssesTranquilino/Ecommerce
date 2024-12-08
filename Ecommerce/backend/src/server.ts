@@ -2,6 +2,7 @@
 
 // Import the 'express' module along with 'Request' and 'Response' types from express
 import express, { Request, Response } from "express";
+import dotenv from "dotenv";
 
 // Create an Express application
 const app = express();
