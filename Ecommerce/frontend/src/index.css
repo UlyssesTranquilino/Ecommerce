@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TUTORIAL: https://www.youtube.com/watch?v=vIBKSmWAdIA */
+
+.light {
+  --redAccent: 219, 68, 68;
+  --textPrimary: 0, 0, 0;
+  --textSecondary: 255, 255, 255;
+  --bgPrimary: 255, 255, 255;
+  --bgSecondary: 0, 0, 0;
+  --buttonBgGray: 245, 245, 245;
+  --button: 0, 0, 0;
+  --stars: 255, 173, 51;
+}
+
+.dark {
+  --redAccent: 219, 68, 68;
+  --textPrimary: 255, 255, 255;
+  --textSecondary: 0, 0, 0;
+  --bgPrimary: 0, 0, 0;
+  --bgGradient: 33, 33, 33;
+  --bgSecondary: 255, 255, 255;
+  --buttonBgGray: 93, 93, 93;
+  --button: 255, 255, 255;
+  --stars: 255, 173, 51;
+}
