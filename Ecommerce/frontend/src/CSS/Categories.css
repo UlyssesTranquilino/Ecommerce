@@ -1,0 +1,23 @@
+/* Position the arrows in the top-right */
+
+.custom-arrow {
+  position: absolute;
+  top: -50px; /* Adjust this to position relative to the slider */
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  z-index: 2;
+}
+
+.custom-next {
+  right: 10px;
+}
+
+.custom-prev {
+  right: 40px;
+}
+
+/* Adjust arrow appearance if necessary */
+.custom-arrow:hover {
+  color: #ff0000;
+}

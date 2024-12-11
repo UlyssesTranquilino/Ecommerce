@@ -3,9 +3,15 @@ import Button from "@mui/material/Button";
 import { TextField } from "@mui/material";
 import NewArrival from "../components/NewArrival";
 import SearchIcon from "@mui/icons-material/Search";
+import Categories from "../components/Categories";
 const HomePage = () => {
+  interface CategoryList {
+    name: String;
+    isToggled: boolean;
+    icon: React.ReactElement;
+  }
   return (
-    <div className="mt-10 flex-col justify-center align-items-center ">
+    <div className="mt-10 flex-col justify-center align-items-center max-w-[1200px] m-auto">
       <div
         className="h rounded-l-lg flex justify-between bg-blue-gray-50"
         style={{ width: "90%", margin: "auto" }}
@@ -27,6 +33,9 @@ const HomePage = () => {
       >
         <div>
           <NewArrival />
+        </div>
+        <div className="mt-20">
+          <Categories />
         </div>
       </div>
     </div>
