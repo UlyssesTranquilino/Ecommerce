@@ -38,7 +38,7 @@ export const createProductHandler = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("ERROR: ", error);
-    res.status(500).json({ success: false, message: "Server Erro" });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 

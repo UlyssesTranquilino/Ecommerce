@@ -6,22 +6,17 @@ import dotenv from "dotenv";
 import connectDB from "./config/db";
 import router from "./routes/product.route";
 import path from "path";
+import cors from "cors"; // Import CORS middleware
+
 const PORT = process.env.PORT || 5000;
 dotenv.config();
 
 const _dirname = path.resolve();
 // Create an Express application
 const app = express();
-
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 app.use("", router);
-
-// Define a route for the root path ('/')
-app.get("/", (req: Request, res: Response) => {
-  // Send a response to the client
-  console.log("HELLO");
-  res.send("Hello, TypeScript + Node.js + Express!");
-});
 
 app.listen(PORT, () => {
   connectDB();

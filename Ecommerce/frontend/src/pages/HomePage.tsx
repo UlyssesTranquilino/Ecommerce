@@ -4,12 +4,8 @@ import { TextField } from "@mui/material";
 import NewArrival from "../components/NewArrival";
 import SearchIcon from "@mui/icons-material/Search";
 import Categories from "../components/Categories";
+import AllProducts from "../components/AllProducts";
 const HomePage = () => {
-  interface CategoryList {
-    name: String;
-    isToggled: boolean;
-    icon: React.ReactElement;
-  }
   return (
     <div className="mt-10 flex-col justify-center align-items-center max-w-[1200px] m-auto">
       <div
@@ -36,6 +32,10 @@ const HomePage = () => {
         </div>
         <div className="mt-20">
           <Categories />
+        </div>
+
+        <div className="mt-20">
+          <AllProducts />
         </div>
       </div>
     </div>
