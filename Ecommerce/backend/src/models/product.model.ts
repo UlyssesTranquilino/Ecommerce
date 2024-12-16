@@ -6,64 +6,44 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    pictures: {
-      type: Array,
+    image: {
+      type: String,
       required: true,
     },
     price: {
       type: Number,
       required: true,
     },
-    discountedPrice: {
-      type: Number,
-      required: false,
+    description: {
+      type: String,
+      required: true,
     },
-    review: {
+    brand: {
       type: String,
       required: false,
     },
-    numReview: {
-      type: Number,
+    model: {
+      type: String,
       required: false,
     },
-    isStock: {
-      type: Boolean,
-      required: true,
-    },
-    colors: {
-      type: Array,
+    color: {
+      type: String,
       required: false,
-    },
-    size: {
-      type: Array,
-      required: false,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-    },
-    isWishlist: {
-      type: Boolean,
-      required: true,
     },
     category: {
       type: String,
-      required: true,
+      required: false,
     },
-    shippingInfo: {
-      type: String,
-      required: true,
-    },
-    tags: {
-      type: String,
-      required: true,
-    },
-    discounts: {
+    discount: {
       type: Number,
       required: false,
     },
     rating: {
-      type: Object,
+      type: Number,
+      required: false,
+    },
+    ratingCount: {
+      type: Number,
       required: false,
     },
   },
