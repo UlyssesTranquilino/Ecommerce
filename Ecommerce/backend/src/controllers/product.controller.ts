@@ -13,21 +13,6 @@ export const getProductsHandler = async (req: Request, res: Response) => {
 
 export const createProductHandler = async (req: Request, res: Response) => {
   const product = req.body;
-  //   if (
-  //     !product.title ||
-  //     !product.pictures ||
-  //     !product.price ||
-  //     !product.isStock ||
-  //     !product.quantity ||
-  //     !product.isWishlist ||
-  //     !product.category ||
-  //     !product.shippingInfo ||
-  //     !product.tags
-  //   ) {
-  //     return res
-  //       .status(400)
-  //       .json({ success: false, message: "Please provide all fields" });
-  //   }
 
   const newProduct = new Product(product);
   try {
@@ -46,11 +31,6 @@ export const updateProductHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   const product = req.body;
-  //   if (!mongoose.Types.ObjectId.isValid(id)) {
-  //     return res
-  //       .status(404)
-  //       .json({ success: false, message: "Invalid Product ID" });
-  //   }
 
   try {
     const updatedProduct = await Product.findByIdAndUpdate(id, product, {
