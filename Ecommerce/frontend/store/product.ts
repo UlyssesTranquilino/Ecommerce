@@ -2,21 +2,17 @@ import { create } from "zustand";
 
 interface Product {
   _id: string;
-  title: String;
-  pictures: [];
-  price: Number;
-  discountedPrice?: Number;
-  review?: String;
-  numReview?: Number;
-  isStock: Boolean;
-  colors?: [];
-  size?: [];
-  quantity: Number;
-  isWishlist: Boolean;
-  category: String;
-  shippingInfo: String;
-  tags: String;
-  discounts?: Number;
+  title: string;
+  image: string;
+  price: number;
+  description: string;
+  brand: string;
+  model: string;
+  color: string;
+  category: string;
+  discount: number;
+  rating: number;
+  ratingCount: number;
 }
 
 interface ProductStoreState {

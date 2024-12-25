@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "../CSS/Categories.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -6,24 +6,36 @@ import "slick-carousel/slick/slick-theme.css";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
+//INTERFACES
+import { Product } from "../Intefaces/Product";
+
+//COMPONENTS
+import ProductCard from "./ProductCard";
+import CategoryPage from "../pages/CategoryPage";
+
+//LINK
+import { Link } from "react-router-dom";
+
+//MUI
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+
+//MUI ICONS
+
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
-import MonitorIcon from "@mui/icons-material/Monitor";
-import WatchOutlinedIcon from "@mui/icons-material/WatchOutlined";
-import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
 import HeadphonesOutlinedIcon from "@mui/icons-material/HeadphonesOutlined";
 import SportsEsportsOutlinedIcon from "@mui/icons-material/SportsEsportsOutlined";
-
+import LaptopIcon from "@mui/icons-material/Laptop";
+import TvIcon from "@mui/icons-material/Tv";
+import KitchenOutlinedIcon from "@mui/icons-material/KitchenOutlined";
 //Zustand
 import { useProductStore } from "../../store/product";
 
 const Categories = () => {
-  const { fetchProducts, products } = useProductStore();
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-  console.log("PRO: ", products);
-
   const CustomNextArrow = ({ onClick }: any) => {
     return (
       <div
@@ -45,43 +57,27 @@ const Categories = () => {
     );
   };
 
-  const categories: Object[] = [
+  //Gaming  Appliences
+
+  const [categories, setCategories] = useState([
     {
-      name: "Phones",
+      name: "Mobile",
       icon: (
         <PhoneIphoneIcon
           sx={{ fontSize: { xs: 30, sm: 32, md: 35, lg: 37 } }}
         />
       ),
-      active: false,
+      active: true,
     },
     {
-      name: "Computers",
+      name: "Laptop",
       icon: (
-        <MonitorIcon sx={{ fontSize: { xs: 30, sm: 32, md: 35, lg: 37 } }} />
+        <LaptopIcon sx={{ fontSize: { xs: 30, sm: 32, md: 35, lg: 37 } }} />
       ),
       active: false,
     },
     {
-      name: "Smart Watch",
-      icon: (
-        <WatchOutlinedIcon
-          sx={{ fontSize: { xs: 30, sm: 32, md: 35, lg: 37 } }}
-        />
-      ),
-      active: false,
-    },
-    {
-      name: "Camera",
-      icon: (
-        <CameraAltOutlinedIcon
-          sx={{ fontSize: { xs: 30, sm: 32, md: 35, lg: 37 } }}
-        />
-      ),
-      active: false,
-    },
-    {
-      name: "Headphones",
+      name: "Audio",
       icon: (
         <HeadphonesOutlinedIcon
           sx={{ fontSize: { xs: 30, sm: 32, md: 35, lg: 37 } }}
@@ -98,7 +94,23 @@ const Categories = () => {
       ),
       active: false,
     },
-  ];
+    {
+      name: "TV",
+      icon: <TvIcon sx={{ fontSize: { xs: 30, sm: 32, md: 35, lg: 37 } }} />,
+      active: false,
+    },
+    {
+      name: "Appliances",
+      icon: (
+        <KitchenOutlinedIcon
+          sx={{ fontSize: { xs: 30, sm: 32, md: 35, lg: 37 } }}
+        />
+      ),
+      active: false,
+    },
+  ]);
+
+  const [currCategory, setCurrCategory] = useState<string>("mobile");
 
   const settings = {
     infinite: false,
@@ -123,6 +135,61 @@ const Categories = () => {
       },
     ],
   };
+
+  const {
+    fetchProducts,
+    products,
+  }: { fetchProducts: Function; products: Product[] } = useProductStore();
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const [productsToShow, setProductsToShow] = useState<Product[]>(products);
+  useEffect(() => {
+    setProductsToShow(products);
+  }, [products]);
+
+  const [sortBy, setSortBy] = useState("");
+
+  const handleChange = (event: SelectChangeEvent) => {
+    const selectedValue = event.target.value;
+    setSortBy(selectedValue);
+
+    const sortedProducts = [...productsToShow]; // Create a copy of the array
+
+    switch (selectedValue) {
+      case "Price: Low to High":
+        sortedProducts.sort((a, b) => {
+          const priceA =
+            a.price - (a.discount ? a.price * (a.discount / 100) : 0);
+          const priceB =
+            b.price - (b.discount ? b.price * (b.discount / 100) : 0);
+          return priceA - priceB; // Ascending order
+        });
+        break;
+      case "Price: High to Low":
+        sortedProducts.sort((a, b) => {
+          const priceA =
+            a.price - (a.discount ? a.price * (a.discount / 100) : 0);
+          const priceB =
+            b.price - (b.discount ? b.price * (b.discount / 100) : 0);
+          return priceB - priceA; // Descending order
+        });
+        break;
+      case "Ratings: Low to High":
+        sortedProducts.sort((a, b) => a.rating - b.rating); // Ascending order
+        break;
+      case "Ratings: High to Low":
+        sortedProducts.sort((a, b) => b.rating - a.rating); // Descending order
+        break;
+      default:
+        sortedProducts.sort(() => Math.random() - 0.5); // Random sorting
+        break;
+    }
+
+    setProductsToShow(sortedProducts);
+  };
   return (
     <div>
       <div className="flex items-center">
@@ -132,33 +199,122 @@ const Categories = () => {
         </h1>
       </div>
 
+      <div className="mt-5 mb-10">
+        <h1 className="font-bold text-2xl text-textPrimary">
+          Browse By Category
+        </h1>
+      </div>
+
       <div className="slider-container mt-14 ">
         <Slider {...settings} className="custom-slider">
-          {categories.map((item, index) => {
+          {categories.map((item) => {
             return (
-              <div key={index} className="mr-3 flex cursor-pointer">
-                <div className="border-[rgba(0, 0, 0, 0.3)] border-2 rounded w-24 sm:w-32 md:w-36 h-[100px] md:h-[120px] flex flex-col items-center justify-center hover:bg-[#DB4444] hover:text-white hover:border-0">
+              <div key={item.name} className="mr-3 flex cursor-pointer">
+                <div
+                  className={`border-[#7e7e7e] border-[1px] rounded w-24 sm:w-32 md:w-36 h-[100px] md:h-[120px] flex flex-col items-center justify-center 
+                ${
+                  item.active
+                    ? "bg-[#DB4444] border-0 text-white"
+                    : "hover:bg-gray-200 hover:text-black "
+                } text-textPrimary `}
+                  onClick={() => {
+                    setSortBy("");
+                    setCategories((prevCategories) => {
+                      return prevCategories.map((cat) => {
+                        if (item.name === cat.name) {
+                          setCurrCategory(cat.name.toLowerCase());
+                          return {
+                            ...cat,
+                            active: true,
+                          };
+                        }
+                        return { ...cat, active: false };
+                      });
+                    });
+                  }}
+                >
                   {item.icon}
 
-                  <h1 className="text-sm md:text-base mt-4">{item.name}</h1>
+                  <h1 className="text-sm md:text-base mt-4 ">{item.name}</h1>
                 </div>
               </div>
             );
           })}
         </Slider>
       </div>
+
+      {productsToShow.length == 0 ? (
+        <div className="flex justify-center mt-24">
+          <CircularProgress sx={{ color: "#DB4444" }} />
+        </div>
+      ) : (
+        <div className="flex justify-end items-center mt-14">
+          <h1 className="mr-3">Sort by:</h1>
+          <FormControl sx={{ m: 0, minWidth: 200 }} size="small">
+            <Select
+              labelId="demo-select-small-label"
+              id="demo-select-small"
+              value={sortBy}
+              onChange={handleChange}
+              displayEmpty
+              sx={{
+                backgroundColor: "#DB4444", // Set background color
+                color: "#FFFFFF", // Set text color for contrast
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: "none", // Remove the border
+                },
+                "& .MuiSelect-icon": {
+                  color: "#FFFFFF", // Optional: Change the dropdown arrow color
+                },
+              }}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={"Price: Low to High"}>
+                Price: Low to High
+              </MenuItem>
+              <MenuItem value={"Price: High to Low"}>
+                Price: High to Low
+              </MenuItem>
+              <MenuItem value={"Ratings: Low to High"}>
+                Ratings: Low to High
+              </MenuItem>
+              <MenuItem value={"Ratings: High to Low"}>
+                Ratings: High to Low
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      )}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
+        {productsToShow
+          .filter((product: Product) => product.category === currCategory)
+          .slice(0, 10)
+          .map((product: Product) => (
+            <Link to={`/product/${product._id}`} key={product._id}>
+              <ProductCard
+                _id={product._id}
+                image={product.image}
+                title={product.title}
+                discount={product.discount}
+                price={product.price}
+                rating={product.rating}
+                ratingCount={product.ratingCount}
+              />
+            </Link>
+          ))}
+      </div>
+
+      <div className="flex justify-center mt-14">
+        <Link to={`/category/${currCategory}`}>
+          <button className="bg-redAccent text-white px-6 py-2 rounded-sm">
+            View All Products
+          </button>
+        </Link>
+      </div>
     </div>
   );
 };
 
 export default Categories;
-{
-  /* <div className="border-[rgba(0, 0, 0, 0.3)] border-2 rounded">
-<div className="w-[115px] h-[80px] flex items-center justify-center p-14">
-  <button className="text-red text-3xl">
-    {categories[0].icon}
-    <p className="text-sm mt-3">Phones</p>
-  </button>
-</div>
-</div> */
-}
