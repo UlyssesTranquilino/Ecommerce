@@ -11,6 +11,18 @@ export const getProductsHandler = async (req: Request, res: Response) => {
   }
 };
 
+export const getSingleProduct = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const product = await Product.findById(id);
+    res.status(200).json({ success: true, data: product });
+  } catch (error) {
+    console.error("ERROR: ", error);
+    res.status(404).json({ success: false, message: "Product Not Found" });
+  }
+};
+
 export const createProductHandler = async (req: Request, res: Response) => {
   const product = req.body;
 
