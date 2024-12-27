@@ -1,4 +1,5 @@
 import Product from "../models/product.model";
+
 import mongoose from "mongoose";
 import { Request, Response } from "express";
 export const getProductsHandler = async (req: Request, res: Response) => {
@@ -8,6 +9,18 @@ export const getProductsHandler = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("ERROR: ", error);
     res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+export const getSingleProduct = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const product = await Product.findById(id);
+    res.status(200).json({ success: true, data: product });
+  } catch (error) {
+    console.error("ERROR: ", error);
+    res.status(404).json({ success: false, message: "Product Not Found" });
   }
 };
 

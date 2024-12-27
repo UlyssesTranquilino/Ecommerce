@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import axios from "axios";
-import Product from "../models/product.model"; // Ensure your path is correct
+// import axios from "axios";
+// import Product from "../models/product.model"; // Ensure your path is correct
 
 dotenv.config();
 
@@ -11,6 +11,8 @@ const connectDB = async () => {
     await mongoose.connect(process.env.MONGO_URI as string, {});
     console.log("MongoDB connected");
 
+    // Commented-out code for fetching and inserting products
+    /*
     // Function to generate random rating and rating count
     function generateRandomRating() {
       const rating = (Math.random() * 5).toFixed(1); // Random rating between 0 and 5
@@ -39,6 +41,7 @@ const connectDB = async () => {
     // Insert the modified products into the MongoDB database
     await Product.insertMany(modifiedProducts);
     console.log("Products inserted successfully");
+    */
   } catch (error) {
     console.log("Error: ", (error as Error).message);
     process.exit(1);
