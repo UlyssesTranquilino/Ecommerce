@@ -31,12 +31,7 @@ const ProductCard = (product: {
       className="rounded-lg bg-white flex-col relative border-redAccent hover:shadow-md cursor-pointer hover:translate-y-[-4px] transition-transform duration-200 ease-in-out"
       key={product._id}
     >
-      <div className="absolute w-5 right-5 mt-3 h-48">
-        <div className="bg-[#F5F5F5] flex w-4 h-4 p-4 items-center justify-center rounded-full cursor-pointer">
-          <FavoriteBorderIcon fontSize="small" />
-        </div>
-      </div>
-      <div className="rounded-t-lg p-auto h-[300px] flex items-center justify-center">
+      <div className="rounded-t-lg p-auto h-[250px] sm:h-[300px] md:h[150px] flex items-center justify-center">
         <img
           src={product.image}
           alt={typeof product.title === "string" ? product.title : undefined}
@@ -65,7 +60,7 @@ const ProductCard = (product: {
           )}
         </div>
       </div>
-      <div className="mt-1 ml-2.5 mb-3 flex">
+      <div className="mt-1 ml-2.5 mb-3 flex pb-3">
         <Rating
           name="half-rating-read"
           defaultValue={product.rating}

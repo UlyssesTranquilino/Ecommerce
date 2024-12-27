@@ -20,9 +20,11 @@ const Navbar = () => {
       </div>
       <div className="flex items-center">
         <p className="mr-3">Sign in</p>
-        <button className="mr-3">
-          <FavoriteBorderIcon />
-        </button>
+        <Link to={"/wishlist"}>
+          <button className="mr-3">
+            <FavoriteBorderIcon />
+          </button>
+        </Link>
         <button className="mr-3">
           <ShoppingCartOutlinedIcon />
         </button>

@@ -11,7 +11,8 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 //RELATED ITEMS
 import RelatedItems from "../components/RelatedItems";
-import Categories from "../components/Categories";
+
+import { useProductStore } from "../../store/product";
 
 const ProductPage = () => {
   interface Product {
@@ -74,6 +75,17 @@ const ProductPage = () => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
+  const { addToWishlist } = useProductStore();
+
+  const toggleWishlist = async (product: Product) => {
+    const { success, message } = await addToWishlist(product);
+    if (success) {
+      console.log(message); // Handle success case
+    } else {
+      console.log("BUGGED");
+      console.error(message); // Handle error case
+    }
+  };
   return (
     <div className="p-5 max-w-[1200px] mx-auto">
       <div className="flex justify-between items-center mb-4">
@@ -83,7 +95,10 @@ const ProductPage = () => {
         >
           <ArrowBackIcon fontSize="small" />
         </div>
-        <div className="bg-[#F5F5F5] flex w-4 h-4 p-4 items-center justify-center rounded-full cursor-pointer md:hidden">
+        <div
+          className="bg-[#F5F5F5] flex w-4 h-4 p-4 items-center justify-center rounded-full cursor-pointer md:hidden"
+          onClick={() => product && toggleWishlist(product)}
+        >
           <FavoriteBorderIcon fontSize="small" />
         </div>
       </div>

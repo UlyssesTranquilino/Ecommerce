@@ -209,9 +209,9 @@ const Categories = () => {
         <Slider {...settings} className="custom-slider">
           {categories.map((item) => {
             return (
-              <div key={item.name} className="mr-3 flex cursor-pointer">
+              <div key={item.name} className="mr-3 lg:mr-5 flex cursor-pointer">
                 <div
-                  className={`border-[#7e7e7e] border-[1px] rounded w-24 sm:w-32 md:w-36 h-[100px] md:h-[120px] flex flex-col items-center justify-center 
+                  className={`border-[#7e7e7e] border-[1px] rounded w-24 sm:w-32 md:w-36 lg:w-[160px] lg:h-[130px] h-[100px] md:h-[120px] flex flex-col items-center justify-center 
                 ${
                   item.active
                     ? "bg-[#DB4444] border-0 text-white"
