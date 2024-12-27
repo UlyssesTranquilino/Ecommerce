@@ -1,4 +1,5 @@
 import Product from "../models/product.model";
+
 import mongoose from "mongoose";
 import { Request, Response } from "express";
 export const getProductsHandler = async (req: Request, res: Response) => {
