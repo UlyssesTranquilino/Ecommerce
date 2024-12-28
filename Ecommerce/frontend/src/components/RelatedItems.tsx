@@ -42,11 +42,8 @@ const RelatedItems = ({ category, id }: any) => {
       <div className="flex items-center">
         <div className="w-4 h-10 bg-redAccent rounded-md"></div>
         <h1 className="text-redAccent font-semibold text-lg ml-3">
-          All Products
+          Related Item
         </h1>
-      </div>
-      <div className="mt-5 mb-10">
-        <h1 className="font-bold text-2xl text-textPrimary">Related Items</h1>
       </div>
 
       {isSuccess ? (

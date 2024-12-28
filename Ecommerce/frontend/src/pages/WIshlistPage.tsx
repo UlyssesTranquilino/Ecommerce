@@ -30,7 +30,7 @@ const WishlistPage = () => {
       const { data, success } = await res.json();
       setIsSuccess(success);
 
-      console.log();
+      console.log("DATA: ", data);
 
       if (success) {
         setCategoryProduct(data);
@@ -91,11 +91,6 @@ const WishlistPage = () => {
     navigate(-1);
   };
 
-  const [message, setMessage] = useState("");
-  const handleDeleteClick = (message: string) => {
-    console.log("DELETED", message);
-  };
-
   useEffect(() => {
     fetchWishlistProduct();
   }, []); // Ensure the effect runs when the category changes
@@ -116,7 +111,6 @@ const WishlistPage = () => {
                 title={product.title}
                 discount={product.discount}
                 price={product.price}
-                setMessage={setMessage}
               />
             </div>
           ))}

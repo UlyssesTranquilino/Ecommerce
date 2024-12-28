@@ -9,11 +9,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 //RELATED ITEMS
 import RelatedItems from "../components/RelatedItems";
 
 import { useProductStore } from "../../store/product";
 
+//TOASTER
+import toast, { Toaster } from "react-hot-toast";
 const ProductPage = () => {
   interface Product {
     _id: string;
@@ -86,8 +89,25 @@ const ProductPage = () => {
       console.error(message); // Handle error case
     }
   };
+
+  //TOASTER
+  const notifyWishlist = (message: string) => toast(message);
+  const [isAddedWishlist, setIsAddedWishlist] = useState(false);
+
   return (
     <div className="p-5 max-w-[1200px] mx-auto">
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          // Define default options
+          className: "",
+          duration: 3000,
+          style: {
+            background: "white",
+            color: "black",
+          },
+        }}
+      />
       <div className="flex justify-between items-center mb-4">
         <div
           onClick={handleBackClick}
@@ -97,9 +117,19 @@ const ProductPage = () => {
         </div>
         <div
           className="bg-[#F5F5F5] flex w-4 h-4 p-4 items-center justify-center rounded-full cursor-pointer md:hidden"
-          onClick={() => product && toggleWishlist(product)}
+          onClick={() => {
+            product && toggleWishlist(product);
+            setIsAddedWishlist(!isAddedWishlist);
+            isAddedWishlist
+              ? notifyWishlist("❤️ Added to Wishlist!")
+              : notifyWishlist("Removed to Wishlist!");
+          }}
         >
-          <FavoriteBorderIcon fontSize="small" />
+          {isAddedWishlist ? (
+            <FavoriteBorderIcon fontSize="small" />
+          ) : (
+            <FavoriteIcon fontSize="small" style={{ color: "#DB4444" }} />
+          )}
         </div>
       </div>
 
@@ -201,12 +231,22 @@ const ProductPage = () => {
               <button className="bg-redAccent text-white w-full h-11 shadow-lg rounded-md col-span-4 ">
                 Add to Cart
               </button>
-              <button className="col-span-1 border-[1px] border-gray-600 h-11 w-11 rounded-md">
-                <FavoriteBorderIcon
-                  fontSize="small"
-                  className="color-red-500"
-                />
-              </button>
+              <button
+                className="col-span-1 border-[1px] border-gray-600 h-11 w-11 rounded-md"
+                onClick={() => {
+                  product && toggleWishlist(product);
+                  setIsAddedWishlist(!isAddedWishlist);
+                  isAddedWishlist
+                    ? notifyWishlist("❤️ Added to Wishlist!")
+                    : notifyWishlist("Removed to Wishlist!");
+                }}
+              >
+                {isAddedWishlist ? (
+                  <FavoriteBorderIcon fontSize="small" />
+                ) : (
+                  <FavoriteIcon fontSize="small" style={{ color: "#DB4444" }} />
+                )}
+              </button>fjghg
             </div>
             <div>
               <div className="mt-0 md:hidden">
