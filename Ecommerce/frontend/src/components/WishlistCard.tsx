@@ -9,6 +9,17 @@ import { useProductStore } from "../../store/product";
 //MUI ICONS
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+
+//MUI SNACKBAR
+import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+
+interface State extends SnackbarOrigin {
+  open: boolean;
+}
+
 const WishlistCard = (product: {
   _id: React.Key | null | undefined;
   image: string | undefined;
@@ -22,9 +33,23 @@ const WishlistCard = (product: {
     | undefined;
   discount: number;
   price: number;
-
-  setMessage: (message: string) => void;
 }) => {
+  //MUI SNACKBAR
+  const [state, setState] = React.useState<State>({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
+  const { vertical, horizontal, open } = state;
+
+  const handleClick = (newState: SnackbarOrigin) => () => {
+    setState({ ...newState, open: true });
+  };
+
+  const handleClose = () => {
+    setState({ ...state, open: false });
+  };
+
   const { deleteWishlist, fetchWishlists } = useProductStore();
 
   const toggleDelete = async (wishlistID: string) => {
@@ -32,10 +57,8 @@ const WishlistCard = (product: {
 
     if (success) {
       console.log(message);
-      setMessage(message);
       await fetchWishlists();
     } else {
-      setMessage(messsage);
       console.log("ERROR: ", message);
     }
   };
@@ -44,9 +67,21 @@ const WishlistCard = (product: {
       className="rounded-lg bg-white flex-col relative border-redAccent hover:shadow-md cursor-pointer hover:translate-y-[-4px] transition-transform duration-200 ease-in-out"
       key={product._id}
     >
+      <div>
+        <Snackbar
+          anchorOrigin={{ vertical, horizontal }}
+          open={open}
+          onClose={handleClose}
+          message="I love snacks"
+          key={vertical + horizontal}
+        />
+      </div>
       <div
         className="absolute bg-gray-200 rounded-full items-center justify-center p-1 right-2 top-2"
-        onClick={() => product._id && toggleDelete(product._id.toString())}
+        onClick={() => {
+          // product._id && toggleDelete(product._id.toString());
+          handleClick({ vertical: "top", horizontal: "center" });
+        }}
       >
         <DeleteOutlinedIcon fontSize="medium" />
       </div>
