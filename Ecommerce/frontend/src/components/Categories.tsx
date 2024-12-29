@@ -306,13 +306,15 @@ const Categories = () => {
           ))}
       </div>
 
-      <div className="flex justify-center mt-14">
-        <Link to={`/category/${currCategory}`}>
-          <button className="bg-redAccent text-white px-6 py-2 rounded-sm">
-            View All Products
-          </button>
-        </Link>
-      </div>
+      {productsToShow.length > 0 && (
+        <div className="flex justify-center mt-14">
+          <Link to={`/category/${currCategory}`}>
+            <button className="bg-redAccent text-white px-6 py-2 rounded-sm">
+              View All Products
+            </button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

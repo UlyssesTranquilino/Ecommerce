@@ -52,6 +52,7 @@ const ProductPage = () => {
     setIsSuccess(success);
     console.log(data);
     setProduct(data);
+    checkIfInWishlist(data.title);
     setMobileTabs([
       { title: "Description", active: true, content: data.description },
       // { title: "Specification", active: false, content: "" },
@@ -78,7 +79,8 @@ const ProductPage = () => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  const { addToWishlist } = useProductStore();
+  const { addToWishlist, wishlists, fetchWishlists, deleteWishlist } =
+    useProductStore();
 
   const toggleWishlist = async (product: Product) => {
     const { success, message } = await addToWishlist(product);
@@ -93,6 +95,17 @@ const ProductPage = () => {
   //TOASTER
   const notifyWishlist = (message: string) => toast(message);
   const [isAddedWishlist, setIsAddedWishlist] = useState(false);
+
+  const checkIfInWishlist = async (productName: string) => {
+    console.log("CHECKERRR: Fetching wishlists...");
+    await fetchWishlists(); // Ensure wishlists are fetched
+    const updatedWishlists = useProductStore.getState().wishlists; // Get the updated state
+    console.log("CHECKERRR: Updated Wishlists: ", updatedWishlists);
+
+    const found = updatedWishlists.some((item) => item.title === productName); // Check if product is in wishlist
+    console.log("FOUND: ", found);
+    setIsAddedWishlist(found);
+  };
 
   return (
     <div className="p-5 max-w-[1200px] mx-auto">
@@ -120,12 +133,20 @@ const ProductPage = () => {
           onClick={() => {
             product && toggleWishlist(product);
             setIsAddedWishlist(!isAddedWishlist);
-            isAddedWishlist
-              ? notifyWishlist("❤️ Added to Wishlist!")
-              : notifyWishlist("Removed to Wishlist!");
+            if (!isAddedWishlist) {
+              if (product) {
+                addToWishlist(product);
+              }
+              notifyWishlist("❤️ Added to Wishlist!");
+            } else {
+              notifyWishlist("Removed to Wishlist!");
+              if (product?._id) {
+                deleteWishlist(product._id);
+              }
+            }
           }}
         >
-          {isAddedWishlist ? (
+          {!isAddedWishlist ? (
             <FavoriteBorderIcon fontSize="small" />
           ) : (
             <FavoriteIcon fontSize="small" style={{ color: "#DB4444" }} />
@@ -198,12 +219,6 @@ const ProductPage = () => {
                   </div>
                 </div>
               )}
-
-              {/* {product?.size && (
-              <div>
-                <h1 className="font-bold">Size</h1>
-              </div>
-            )} */}
             </div>
 
             <div className="bottom-3 right-0 w-80 grid-cols-8 gap-4 hidden md:grid ">
@@ -236,17 +251,25 @@ const ProductPage = () => {
                 onClick={() => {
                   product && toggleWishlist(product);
                   setIsAddedWishlist(!isAddedWishlist);
-                  isAddedWishlist
-                    ? notifyWishlist("❤️ Added to Wishlist!")
-                    : notifyWishlist("Removed to Wishlist!");
+                  if (!isAddedWishlist) {
+                    if (product) {
+                      addToWishlist(product);
+                    }
+                    notifyWishlist("❤️ Added to Wishlist!");
+                  } else {
+                    notifyWishlist("Removed to Wishlist!");
+                    if (product?._id) {
+                      deleteWishlist(product._id);
+                    }
+                  }
                 }}
               >
-                {isAddedWishlist ? (
+                {!isAddedWishlist ? (
                   <FavoriteBorderIcon fontSize="small" />
                 ) : (
                   <FavoriteIcon fontSize="small" style={{ color: "#DB4444" }} />
                 )}
-              </button>fjghg
+              </button>
             </div>
             <div>
               <div className="mt-0 md:hidden">
