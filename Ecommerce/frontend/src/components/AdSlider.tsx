@@ -30,7 +30,7 @@ const AdSlider = () => {
   const isMediumBelow = useMediaQuery({ query: "(max-width: 767px)" });
 
   return (
-    <div>
+    <div className="w-[99%] m-auto">
       <Slider {...settings}>
         <div className="ad-sale">
           {isMediumBelow ? (

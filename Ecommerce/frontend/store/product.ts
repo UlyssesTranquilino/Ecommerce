@@ -20,6 +20,10 @@ interface ProductStoreState {
   wishlists: Product[];
   setProducts: (products: Product[]) => void;
   fetchProducts: () => Promise<void>;
+  updateProduct: (
+    productId: string,
+    updatedProduct: Partial<Product>
+  ) => Promise<{ success: boolean; message: string }>;
 
   fetchWishlists: () => Promise<void>;
   setWishlists: (products: Product[]) => void;
@@ -39,6 +43,43 @@ export const useProductStore = create<ProductStoreState>((set) => ({
   setWishlists: (products) => set({ products }),
 
   setProducts: (products) => set({ products }),
+
+  updateProduct: async (productID, updatedProduct) => {
+    try {
+      const res = await fetch(`http://localhost:5000/${productID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedProduct),
+      });
+
+      if (!res.ok) {
+        // If the response status is not OK (e.g., 4xx or 5xx), throw an error
+        const error = await res.json();
+        throw new Error(error.message || "Failed to update product");
+      }
+
+      const data = await res.json();
+
+      // Update the local state with the updated product
+      set((state) => ({
+        products: state.products.map((product) =>
+          product._id === productID
+            ? { ...product, ...updatedProduct }
+            : product
+        ),
+      }));
+
+      return { success: true, message: "Product updated successfully!" };
+    } catch (error) {
+      console.error("Error updating product:", error);
+      return {
+        success: false,
+        message: (error as Error).message || "An unexpected error occurred",
+      };
+    }
+  },
 
   fetchProducts: async () => {
     const res = await fetch("http://localhost:5000/");

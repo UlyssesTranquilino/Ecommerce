@@ -1,123 +1,117 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import ProductCard from "../components/ProductCard";
-
+import { Link, useNavigate } from "react-router-dom";
 import WishlistCard from "../components/WishlistCard";
-
-//INTERFACES
-import { Product } from "../Intefaces/Product";
-
-//MUI
+import EmptyWishlistImage from "../assets/Images/Empty Wishlist.png";
 import CircularProgress from "@mui/material/CircularProgress";
-import FormControl from "@mui/material/FormControl";
-import MenuItem from "@mui/material/MenuItem";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-//ZUSTAND
-import { useProductStore } from "../../store/product";
+import { Product } from "../Interfaces/Product";
+//TOASTER
+import toast, { Toaster } from "react-hot-toast";
 
 const WishlistPage = () => {
-  const { wishlists, fetchWishlists } = useProductStore();
+  const [wishlistItems, setWishlistItems] = useState<Product[]>([]); // Renamed from categoryProduct
+  const [isFetching, setIsFetching] = useState<boolean>(true); // Renamed from isLoading
 
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [categoryProduct, setCategoryProduct] = useState<Product[]>(wishlists);
-
-  const fetchWishlistProduct = async () => {
+  const fetchWishlistItems = async () => {
+    // Renamed from fetchWishlistProduct
     try {
-      console.log("FETCHING WISHLISTS");
-      const res = await fetch(`http://localhost:5000/api/wishlist`);
-      const { data, success } = await res.json();
-      setIsSuccess(success);
-
-      console.log("DATA: ", data);
+      const response = await fetch(`http://localhost:5000/api/wishlist`);
+      const { data, success } = await response.json();
 
       if (success) {
-        setCategoryProduct(data);
+        setWishlistItems(data);
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching wishlist items:", error); // Updated error message
+    } finally {
+      setIsFetching(false);
     }
   };
 
-  const capitalizeFirstLetter = (string: string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
+  const removeWishlistItem = async (id: string) => {
+    // Renamed from handleDelete
+    try {
+      const response = await fetch(`http://localhost:5000/api/wishlist/${id}`, {
+        method: "DELETE",
+      });
+      const { success, message } = await response.json();
 
-  const [sortBy, setSortBy] = useState("");
-
-  const handleChange = (event: SelectChangeEvent) => {
-    const selectedValue = event.target.value;
-    setSortBy(selectedValue);
-
-    const sortedProducts = [...categoryProduct]; // Create a copy of the array
-
-    switch (selectedValue) {
-      case "Price: Low to High":
-        sortedProducts.sort((a, b) => {
-          const priceA =
-            a.price - (a.discount ? a.price * (a.discount / 100) : 0);
-          const priceB =
-            b.price - (b.discount ? b.price * (b.discount / 100) : 0);
-          return priceA - priceB; // Ascending order
-        });
-        break;
-      case "Price: High to Low":
-        sortedProducts.sort((a, b) => {
-          const priceA =
-            a.price - (a.discount ? a.price * (a.discount / 100) : 0);
-          const priceB =
-            b.price - (b.discount ? b.price * (b.discount / 100) : 0);
-          return priceB - priceA; // Descending order
-        });
-        break;
-      case "Ratings: Low to High":
-        sortedProducts.sort((a, b) => a.rating - b.rating); // Ascending order
-        break;
-      case "Ratings: High to Low":
-        sortedProducts.sort((a, b) => b.rating - a.rating); // Descending order
-        break;
-      default:
-        sortedProducts.sort(() => Math.random() - 0.5); // Random sorting
-        break;
+      if (success) {
+        toast.success("Item removed from wishlist!");
+        setWishlistItems((prevItems) =>
+          prevItems.filter((item) => item._id !== id)
+        ); // Renamed to reflect removal of item from wishlist
+      } else {
+        toast.error(message || "Failed to remove item.");
+      }
+    } catch (error) {
+      console.error("Error deleting wishlist item: ", error); // Updated error message
+      toast.error("An error occurred while removing the item.");
     }
-
-    setCategoryProduct(sortedProducts);
-  };
-
-  const navigate = useNavigate();
-
-  const handleBackClick = () => {
-    navigate(-1);
   };
 
   useEffect(() => {
-    fetchWishlistProduct();
-  }, []); // Ensure the effect runs when the category changes
+    fetchWishlistItems();
+  }, []);
 
   return (
-    <div className="w-[90%] m-auto mt-4  max-w-[1200px] pb-52">
+    <div className="w-[90%] m-auto mt-4 max-w-[1200px] pb-52">
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          className: "",
+          duration: 3000,
+          style: {
+            background: "white",
+            color: "black",
+          },
+        }}
+      />
       <div className="flex items-center mt-10">
         <div className="w-4 h-10 bg-redAccent rounded-md"></div>
         <h1 className="text-redAccent font-semibold text-xl ml-3">Wishlist</h1>
       </div>
-      {isSuccess && categoryProduct.length > 0 ? (
+
+      {isFetching ? (
+        <div className="flex justify-center mt-24">
+          <CircularProgress sx={{ color: "#DB4444" }} />
+        </div>
+      ) : wishlistItems.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
-          {categoryProduct.map((product: Product) => (
-            <div key={product._id}>
-              <WishlistCard
-                _id={product._id}
-                image={product.image}
-                title={product.title}
-                discount={product.discount}
-                price={product.price}
-              />
-            </div>
+          {wishlistItems.map((item) => (
+            <WishlistCard
+              key={item._id}
+              _id={item._id}
+              image={item.image}
+              title={item.title}
+              discount={item.discount}
+              price={item.price}
+              onDelete={removeWishlistItem} // Updated function name
+            />
           ))}
         </div>
       ) : (
-        <div className="flex justify-center mt-24">
-          <CircularProgress sx={{ color: "#DB4444" }} />
+        <div className="flex flex-col items-center">
+          <img
+            src={EmptyWishlistImage} // Renamed for clarity
+            alt="Empty Wishlist"
+            className="w-40 mt-20"
+          />
+          <div className="text-center mt-10">
+            <h1 className="font-extrabold text-redAccent text-lg">
+              Your Wishlist is Empty!
+            </h1>
+            <p className="p-3 w-56 text-gray-700 text-sm">
+              Find something you love and add it here!
+            </p>
+            <div className="mt-10">
+              <Link to="/">
+                <button className="bg-redAccent text-white py-3 px-7 rounded-sm text-sm hover:shadow-md">
+                  Start Shopping
+                </button>
+              </Link>
+            </div>
+          </div>
         </div>
       )}
     </div>
