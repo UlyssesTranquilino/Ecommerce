@@ -66,7 +66,9 @@ const ProductPage = () => {
   };
 
   useEffect(() => {
-    fetchSingleProduct(id);
+    if (id) {
+      fetchSingleProduct(id);
+    }
   }, [id]);
 
   const navigate = useNavigate();
@@ -79,10 +81,19 @@ const ProductPage = () => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  const { addToWishlist, wishlists, fetchWishlists, deleteWishlist } =
-    useProductStore();
+  const {
+    addToWishlist,
+    wishlists,
+    fetchWishlists,
+    deleteWishlist,
+    user,
+    fetchUser,
+  } = useProductStore();
 
   const toggleWishlist = async (product: Product) => {
+    if (!user._id) {
+      navigate("/signin");
+    }
     const { success, message } = await addToWishlist(product);
     if (success) {
       console.log(message); // Handle success case
@@ -92,6 +103,11 @@ const ProductPage = () => {
     }
   };
 
+  const toggleAddToCart = () => {
+    if (!user._id) {
+      navigate("/signin");
+    }
+  };
   //TOASTER
   const notifyWishlist = (message: string) => toast(message);
   const [isAddedWishlist, setIsAddedWishlist] = useState(false);
@@ -243,7 +259,10 @@ const ProductPage = () => {
                   <AddIcon className="text-white" />
                 </button>
               </div>
-              <button className="bg-redAccent text-white w-full h-11 shadow-lg rounded-md col-span-4 ">
+              <button
+                className="bg-redAccent text-white w-full h-11 shadow-lg rounded-md col-span-4 "
+                onClick={toggleAddToCart}
+              >
                 Add to Cart
               </button>
               <button

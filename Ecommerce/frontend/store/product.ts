@@ -1,5 +1,5 @@
 import { create } from "zustand";
-
+import axios from "axios";
 interface Product {
   _id: string;
   title: string;
@@ -27,14 +27,14 @@ interface User {
 interface ProductStoreState {
   products: Product[];
   allUsers: User[];
-  user: User;
+  user: Partial<User>;
   setUser: (user: User) => void;
   setAllUsers: (users: User[]) => void;
-  fetchUser: () => Promise<void>;
-  updateUser: (
-    UserId: string,
-    updatedUser: Partial<User>
+  addUser: (
+    newUser: Partial<User>
   ) => Promise<{ success: boolean; message: string }>;
+  fetchUser: () => Promise<void>;
+  updateUser: (user: User) => Promise<{ success: boolean; message: string }>;
 
   wishlists: Product[];
   setProducts: (products: Product[]) => void;
@@ -70,6 +70,39 @@ export const useProductStore = create<ProductStoreState>((set) => ({
 
   setUser: (user) => set({ user }),
   setAllUsers: (users) => set({ allUsers: users }),
+  addUser: async (newUser) => {
+    try {
+      const res = await fetch("http://localhost:5000/user/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      const data = await res.json();
+      console.log("DATA: ", data);
+      if (data.errors) {
+        let messages = "";
+        if (data.errors.name) messages += data.errors.name.message + ".";
+        if (data.errors.email) messages += data.errors.email.message + ". ";
+        if (data.errors.password)
+          messages += data.errors.password.message + ". ";
+
+        throw messages || "Failed to add user";
+      }
+      console.log("DATA: ", data);
+      set((state) => ({ allUsers: [...state.allUsers, data.data] }));
+      return { success: true, message: "User added" };
+    } catch (error) {
+      console.log("ERROR: ", error);
+      console.error("Error adding user:", error);
+      return {
+        success: false,
+        message: error || "An unexpected error occurred",
+      };
+    }
+  },
 
   fetchUser: async () => {
     const res = await fetch("http://localhost:5000/api/user");

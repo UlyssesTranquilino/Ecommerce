@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import { useProductStore } from "../../store/product";
+
 const SignUpPage = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -10,7 +12,9 @@ const SignUpPage = () => {
   const [message, setMessage] = useState<string>("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const { addUser } = useProductStore();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!name || !email || !password) {
@@ -19,20 +23,19 @@ const SignUpPage = () => {
       return;
     }
 
-    axios
-      .post("http://localhost:5000/user/signup", { name, email, password })
-      .then((result) => {
-        setIsSuccess(true);
-        setMessage("");
-        navigate("/signin");
-      })
-      .catch((err) => {
-        console.log(err.response?.data || "Error occurred");
-        setIsSuccess(false);
-        setMessage(
-          err.response?.data || "An error occurred. Please try again."
-        );
-      });
+    const { success, message } = await addUser({
+      name,
+      email,
+      password,
+    });
+
+    if (success) {
+      navigate("/signin");
+    } else {
+      console.log(message);
+      setMessage(message);
+      setIsSuccess(false);
+    }
   };
   return (
     <div className="mt-10 w-[90%] m-auto max-w-[1200px]">
