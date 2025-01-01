@@ -7,6 +7,8 @@ import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import CategoryPage from "./pages/CategoryPage";
 import WishlistPage from "./pages/WIshlistPage";
+import SignUpPage from "./pages/SignUpPage";
+import SignInPage from "./pages/SignInPage";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/category/:category" element={<CategoryPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
       </Routes>
     </div>
   );

@@ -9,6 +9,7 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 const Navbar = () => {
   const location = useLocation(); // Get the current location
   const isWishlistActive = location.pathname === "/wishlist"; // Check if the path is /wishlist
+  const isSigninActive = location.pathname === "/signin";
 
   return (
     <nav className="bg-black text-white h-12 flex items-center justify-between">
@@ -23,7 +24,13 @@ const Navbar = () => {
         </Link>
       </div>
       <div className="flex items-center">
-        <p className="mr-3">Sign in</p>
+        <Link to={"/signin"}>
+          {!isSigninActive ? (
+            <p className="mr-3">Sign in</p>
+          ) : (
+            <p className="mr-3 border-redAccent border-b-[1px]">Sign in</p>
+          )}
+        </Link>
         <Link to={"/wishlist"}>
           <button
             className={`mr-3 ${

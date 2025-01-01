@@ -15,8 +15,27 @@ interface Product {
   ratingCount: number;
 }
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+  carts: Product[];
+  wishlists: Product[];
+}
+
 interface ProductStoreState {
   products: Product[];
+  allUsers: User[];
+  user: User;
+  setUser: (user: User) => void;
+  setAllUsers: (users: User[]) => void;
+  fetchUser: () => Promise<void>;
+  updateUser: (
+    UserId: string,
+    updatedUser: Partial<User>
+  ) => Promise<{ success: boolean; message: string }>;
+
   wishlists: Product[];
   setProducts: (products: Product[]) => void;
   fetchProducts: () => Promise<void>;
@@ -37,8 +56,59 @@ interface ProductStoreState {
 
 export const useProductStore = create<ProductStoreState>((set) => ({
   products: [],
-
+  allUsers: [],
   wishlists: [],
+
+  user: {
+    _id: "",
+    name: "",
+    email: "",
+    password: "",
+    carts: [],
+    wishlists: [],
+  },
+
+  setUser: (user) => set({ user }),
+  setAllUsers: (users) => set({ allUsers: users }),
+
+  fetchUser: async () => {
+    const res = await fetch("http://localhost:5000/api/user");
+    const data = await res.json();
+    set({ user: data.data });
+  },
+  updateUser: async (userId, updatedUser) => {
+    try {
+      const res = await fetch(`http://localhost:5000/user/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUser),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Failed to update user");
+      }
+
+      const data = await res.json();
+
+      set((state) => ({ user: { ...state.user, ...updatedUser } }));
+      set((state) => ({
+        allUsers: state.allUsers.map((user) =>
+          user._id === userId ? { ...user, ...updatedUser } : user
+        ),
+      }));
+
+      return { success: true, message: "User updated" };
+    } catch (error) {
+      console.error("Error updating user:", error);
+      return {
+        success: false,
+        message: (error as Error).message || "An unexpected error occurred",
+      };
+    }
+  },
 
   setWishlists: (products) => set({ products }),
 
