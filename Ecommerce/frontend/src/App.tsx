@@ -9,6 +9,7 @@ import CategoryPage from "./pages/CategoryPage";
 import WishlistPage from "./pages/WIshlistPage";
 import SignUpPage from "./pages/SignUpPage";
 import SignInPage from "./pages/SignInPage";
+import AccountPage from "./pages/AccountPage";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/account" element={<AccountPage />} />
       </Routes>
     </div>
   );

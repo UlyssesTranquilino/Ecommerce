@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "@mui/material/Button";
 import { TextField } from "@mui/material";
 import AdSlider from "../components/AdSlider";
 import NewArrival from "../components/NewArrival";
 import SearchIcon from "@mui/icons-material/Search";
 import Categories from "../components/Categories";
+
 import AllProducts from "../components/AllProducts";
+
+//vid: https://www.youtube.com/watch?v=Ejg7es3ba2k
+
+import { useUserStore } from "../../store/product";
 const HomePage = () => {
   return (
     <div className="mt-10 flex-col justify-center align-items-center max-w-[1200px] m-auto ">

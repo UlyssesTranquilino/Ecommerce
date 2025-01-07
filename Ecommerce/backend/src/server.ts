@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db";
 import router from "./routes/product.route";
 import wishlistRouter from "./routes/wishlist.route";
+import userRouter from "./routes/user.route";
 import path from "path";
 import cors from "cors"; // Import CORS middleware
 
@@ -22,6 +23,7 @@ const allowedOrigins = [
   "http://192.168.56.1:5173",
   "http://192.168.1.9:5173",
   "http://192.168.1.5:5173",
+  "http://192.168.1.7:5173",
 ];
 
 // Configure CORS middleware
@@ -40,8 +42,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use("", userRouter);
 app.use("", router);
 app.use("", wishlistRouter);
+app.use("", userRouter);
 
 app.listen(PORT, () => {
   connectDB();

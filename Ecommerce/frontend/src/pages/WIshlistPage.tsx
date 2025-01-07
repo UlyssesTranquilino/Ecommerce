@@ -4,29 +4,57 @@ import WishlistCard from "../components/WishlistCard";
 import EmptyWishlistImage from "../assets/Images/Empty Wishlist.png";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { Product } from "../Interfaces/Product";
+import { Product } from "../interfaces/Product";
 //TOASTER
 import toast, { Toaster } from "react-hot-toast";
+import { useProductStore, useUserStore } from "../../store/product";
 
 const WishlistPage = () => {
+  const navigate = useNavigate();
+  const { currentUser } = useUserStore();
   const [wishlistItems, setWishlistItems] = useState<Product[]>([]); // Renamed from categoryProduct
   const [isFetching, setIsFetching] = useState<boolean>(true); // Renamed from isLoading
 
-  const fetchWishlistItems = async () => {
-    // Renamed from fetchWishlistProduct
-    try {
-      const response = await fetch(`http://localhost:5000/api/wishlist`);
-      const { data, success } = await response.json();
+  const { fetchSingleProduct } = useProductStore();
+  console.log("USER WISHLIST NO USE EFFECT: ", currentUser);
+  useEffect(() => {
+    console.log("CURRENT USER: ", currentUser);
+    if (currentUser.id) {
+      const fetchWishlistItems = async () => {
+        try {
+          const fetchedItems = await Promise.all(
+            currentUser.wishlists.map(async (itemID: string) => {
+              console.log("USER WISHLIST: ", itemID);
+              try {
+                const data = await fetchSingleProduct(itemID);
+                console.log("WISHLIST DATA: ", data);
+                return data.data; // Return product data
+              } catch (error) {
+                console.error(
+                  `Error fetching product with ID ${itemID}:`,
+                  error
+                );
+                return null; // Return null for missing products
+              }
+            })
+          );
 
-      if (success) {
-        setWishlistItems(data);
-      }
-    } catch (error) {
-      console.error("Error fetching wishlist items:", error); // Updated error message
-    } finally {
-      setIsFetching(false);
+          // Filter out any null values in case some products were not found
+          setWishlistItems(fetchedItems.filter((item) => item !== null));
+          console.log("WISHLIST ITEMS: ", wishlistItems);
+
+          setIsFetching(false);
+        } catch (error) {
+          console.error("Error fetching wishlist items:", error);
+          setIsFetching(false);
+        }
+      };
+
+      fetchWishlistItems();
+    } else {
+      navigate("/signin");
     }
-  };
+  }, []);
 
   const removeWishlistItem = async (id: string) => {
     // Renamed from handleDelete
@@ -49,10 +77,6 @@ const WishlistPage = () => {
       toast.error("An error occurred while removing the item.");
     }
   };
-
-  useEffect(() => {
-    fetchWishlistItems();
-  }, []);
 
   return (
     <div className="w-[90%] m-auto mt-4 max-w-[1200px] pb-52">

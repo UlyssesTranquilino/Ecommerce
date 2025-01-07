@@ -10,7 +10,6 @@ const RelatedItems = ({ category, id }: any) => {
   const [categoryProduct, setCategoryProduct] = useState<Product[]>([]);
 
   const fetchCategoryProduct = async () => {
-    console.log("RELATED: ", category);
     try {
       const res = await fetch(`http://localhost:5000`);
       const { data, success } = await res.json();
@@ -22,7 +21,6 @@ const RelatedItems = ({ category, id }: any) => {
           )
           .slice(0, 9);
         setCategoryProduct(filteredProducts);
-        console.log("Category Products: ", filteredProducts);
       }
     } catch (error) {
       console.error("Error fetching products:", error);

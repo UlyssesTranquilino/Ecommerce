@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-import { useProductStore } from "../../store/product";
+import { useUserStore } from "../../store/product";
 
 const SignInPage = () => {
   const [email, setEmail] = useState<string>("");
@@ -10,6 +11,8 @@ const SignInPage = () => {
   const [isSuccess, setIsSuccess] = useState(true);
   const [message, setMessage] = useState<string>("");
   const navigate = useNavigate();
+
+  const { setCurrentUser } = useUserStore();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,10 +26,16 @@ const SignInPage = () => {
     axios
       .post("http://localhost:5000/user/signin", { email, password })
       .then((result) => {
-        console.log(result);
-        if (result.data === "Success") {
+        if (result.data.success) {
           setIsSuccess(true);
-          setMessage("");
+          localStorage.setItem("token", result.data.user);
+
+          const decodedToken = jwtDecode(result.data.user);
+          console.log("DECODED TOKEN: ", decodedToken);
+          setCurrentUser(decodedToken);
+          console.log("Decoded User Info: ", decodedToken);
+
+          alert("Logged in successfully");
           navigate("/");
         } else {
           setIsSuccess(false);
