@@ -28,6 +28,14 @@ interface User {
   wishlists: Product[];
 }
 
+interface Cart {
+  _id: string;
+  price: number;
+  quantity: number;
+  model: string;
+  color: string;
+}
+
 interface ProductStoreState {
   products: Product[];
 
@@ -43,6 +51,14 @@ interface ProductStoreState {
     newUser: Partial<User>
   ) => Promise<{ success: boolean; message: string }>;
 }
+
+const normalizeUser = (user: any) => {
+  if (user && user.id && !user._id) {
+    user._id = user.id; // Copy `id` to `_id` for consistency.
+    delete user.id; // Optionally remove `id` to avoid confusion.
+  }
+  return user;
+};
 
 export const useProductStore = create<ProductStoreState>((set, get) => ({
   products: [],
@@ -132,13 +148,13 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
 // User Store with persist
 export const useUserStore = create(
   persist(
-    (set, get) => ({
+    (set: any, get: () => { currentUser: User | null }) => ({
       currentUser: null,
       setCurrentUser: (user: any) => set({ currentUser: user }),
       addUserWishlist: async (product: any) => {
-        const currentUser = get().currentUser;
-
-        console.log("ZUSTAND CURRENT USER: ", currentUser);
+        let currentUser: User | null = get()?.currentUser;
+        currentUser = normalizeUser(currentUser);
+        console.log("CURENT USER: ", currentUser);
 
         if (!currentUser) {
           console.error("No user logged in");
@@ -147,7 +163,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `http://localhost:5000/user/wishlist/${currentUser.id}`,
+            `http://localhost:5000/user/wishlist/${currentUser._id}`,
             {
               method: "POST",
               headers: {
@@ -161,16 +177,113 @@ export const useUserStore = create(
 
           if (!response.ok) {
             console.error("Error adding to wishlist:", result.message);
-            return;
+            return {
+              success: false,
+              message: "PRODUCT ERROR ADDING TO WISHLIST!",
+            };
           }
 
           set({
-            currentUser: { ...currentUser, wishlists: result.data.wishlist },
+            currentUser: normalizeUser(result.data),
           });
-          console.log(result.message);
+
           return { success: true, message: "PRODUCT ADDED TO WISHLIST!" };
         } catch (error) {
           console.error("Error adding to wishlist:", error);
+        }
+      },
+      deleteUserWishlist: async (product: any) => {
+        let currentUser: User | null = get()?.currentUser;
+        currentUser = normalizeUser(currentUser);
+
+        if (!currentUser) {
+          console.error("No user logged in");
+          return { success: false, message: "FAILED REMOVING FROM WISHLIST" };
+        }
+
+        try {
+          const response = await fetch(
+            `http://localhost:5000/user/wishlist/${currentUser._id}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(product),
+            }
+          );
+
+          const result = await response.json();
+
+          console.log("RESULT DELETE: ", result);
+
+          if (!response.ok) {
+            console.error("Error deleting from wishlist:", result.message);
+            return { success: false, message: result.message };
+          }
+
+          normalizeUser(result.wishlist);
+
+          set({
+            currentUser: { ...currentUser, wishlists: result.wishlist },
+          });
+
+          return { success: true, message: "PRODUCT REMOVED FROM WISHLIST!" };
+        } catch (error) {
+          console.error("Error removing from wishlist:", error);
+          return { success: false, message: "An error occurred" };
+        }
+      },
+      addUserCart: async (product: Cart) => {
+        let currentUser: User | null = get()?.currentUser;
+        currentUser = normalizeUser(currentUser);
+
+        if (!currentUser) {
+          console.error("Add to Cart Error: No user is currently logged in.");
+          return {
+            success: false,
+            message: "You must be logged in to add items to your cart.",
+          };
+        }
+
+        try {
+          const response = await fetch(
+            `http://localhost:5000/user/cart/${currentUser._id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(product),
+            }
+          );
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            console.error("Add to Cart API Error:", result.message);
+            return {
+              success: false,
+              message:
+                "There was an error adding the product to your cart. Please try again later.",
+            };
+          }
+
+          set({
+            currentUser: normalizeUser(result.data),
+          });
+
+          return {
+            success: true,
+            message: "Product successfully added to your cart!",
+          };
+        } catch (error) {
+          console.error("Add to Cart Request Failed:", error);
+          return {
+            success: false,
+            message:
+              "Unable to add the product to your cart due to a network or server error. Please try again later.",
+          };
         }
       },
     }),

@@ -23,14 +23,17 @@ const userSchema = new mongoose.Schema(
     },
     carts: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        quantity: { type: Number, required: true, default: 1 },
+        subTotal: { type: Number, required: false, default: 0 },
+        model: { type: String, required: false },
+        color: { type: String, required: false },
       },
     ],
     wishlists: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
+        ref: "Wishlist",
       },
     ],
     address: {

@@ -12,6 +12,8 @@ import AllProducts from "../components/AllProducts";
 
 import { useUserStore } from "../../store/product";
 const HomePage = () => {
+  const { currentUser } = useUserStore();
+  console.log("HOME PAGE: ", currentUser);
   return (
     <div className="mt-10 flex-col justify-center align-items-center max-w-[1200px] m-auto ">
       <div

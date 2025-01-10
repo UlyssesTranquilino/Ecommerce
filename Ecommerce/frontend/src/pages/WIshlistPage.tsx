@@ -11,15 +11,15 @@ import { useProductStore, useUserStore } from "../../store/product";
 
 const WishlistPage = () => {
   const navigate = useNavigate();
-  const { currentUser } = useUserStore();
+  const { currentUser, deleteUserWishlist } = useUserStore();
+  const { fetchSingleProduct } = useProductStore();
+
   const [wishlistItems, setWishlistItems] = useState<Product[]>([]); // Renamed from categoryProduct
   const [isFetching, setIsFetching] = useState<boolean>(true); // Renamed from isLoading
 
-  const { fetchSingleProduct } = useProductStore();
-  console.log("USER WISHLIST NO USE EFFECT: ", currentUser);
   useEffect(() => {
     console.log("CURRENT USER: ", currentUser);
-    if (currentUser.id) {
+    if (currentUser) {
       const fetchWishlistItems = async () => {
         try {
           const fetchedItems = await Promise.all(
@@ -56,28 +56,24 @@ const WishlistPage = () => {
     }
   }, []);
 
-  const removeWishlistItem = async (id: string) => {
-    // Renamed from handleDelete
-    try {
-      const response = await fetch(`http://localhost:5000/api/wishlist/${id}`, {
-        method: "DELETE",
-      });
-      const { success, message } = await response.json();
+  const deleteWishlist = async (product: any) => {
+    const { success, message } = await deleteUserWishlist(product);
+  
+    if (success) {
+      console.log("PRODUCT REMOVED FROM WISHLIST");
 
-      if (success) {
-        toast.success("Item removed from wishlist!");
-        setWishlistItems((prevItems) =>
-          prevItems.filter((item) => item._id !== id)
-        ); // Renamed to reflect removal of item from wishlist
-      } else {
-        toast.error(message || "Failed to remove item.");
-      }
-    } catch (error) {
-      console.error("Error deleting wishlist item: ", error); // Updated error message
-      toast.error("An error occurred while removing the item.");
+      // Remove the deleted product from local state
+      setWishlistItems((prevItems) =>
+        prevItems.filter((item) => item._id !== product._id)
+      );
+
+      // Optionally show a success toast
+      toast.success("Product removed from wishlist!");
+    } else {
+      console.error(message);
+      toast.error(message || "Failed to remove product from wishlist");
     }
   };
-
   return (
     <div className="w-[90%] m-auto mt-4 max-w-[1200px] pb-52">
       <Toaster
@@ -110,7 +106,8 @@ const WishlistPage = () => {
               title={item.title}
               discount={item.discount}
               price={item.price}
-              onDelete={removeWishlistItem} // Updated function name
+              product={item}
+              onDelete={deleteWishlist} // Updated function name
             />
           ))}
         </div>

@@ -130,6 +130,8 @@ export const deleteUserWishlistHanlder = async (
   const { id } = req.params;
   const productID = req.body;
 
+  console.log("BACKEND: ", id);
+
   try {
     const user = await User.findById(id);
 
@@ -152,5 +154,50 @@ export const deleteUserWishlistHanlder = async (
     res
       .status(500)
       .json({ message: "Error removing product from wishlist", error });
+  }
+};
+
+export const addUserCartHandler = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const { id } = req.params;
+  const productAdded = req.body;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if the product already exists in the cart
+    const existingItem = user.carts.find(
+      (item) => item._id?.toString() === productAdded._id.toString()
+    );
+
+    if (existingItem) {
+      // If the item exists, update its quantity, model, and color
+      const quantity = existingItem.quantity + productAdded.quantity;
+      console.log("Quantity: ", quantity);
+      existingItem.quantity += productAdded.quantity;
+      existingItem.subTotal = productAdded.price * existingItem.quantity;
+      existingItem.model = productAdded.model;
+      existingItem.color = productAdded.color;
+    } else {
+      // If the item doesn't exist in the cart, add it
+      user.carts.push({
+        _id: productAdded._id, // Ensure this matches your schema
+        quantity: productAdded.quantity,
+        subTotal: productAdded.price * productAdded.quantity, // Calculate subtotal
+        model: productAdded.model,
+        color: productAdded.color,
+      });
+    }
+
+    await user.save();
+    res.json({ message: "Item added to cart successfully.", data: user });
+  } catch (error) {
+    console.error("Error adding item to cart:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
