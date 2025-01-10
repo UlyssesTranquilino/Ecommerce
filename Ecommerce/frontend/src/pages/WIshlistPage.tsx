@@ -4,56 +4,76 @@ import WishlistCard from "../components/WishlistCard";
 import EmptyWishlistImage from "../assets/Images/Empty Wishlist.png";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { Product } from "../Interfaces/Product";
+import { Product } from "../interfaces/Product";
 //TOASTER
 import toast, { Toaster } from "react-hot-toast";
+import { useProductStore, useUserStore } from "../../store/product";
 
 const WishlistPage = () => {
+  const navigate = useNavigate();
+  const { currentUser, deleteUserWishlist } = useUserStore();
+  const { fetchSingleProduct } = useProductStore();
+
   const [wishlistItems, setWishlistItems] = useState<Product[]>([]); // Renamed from categoryProduct
   const [isFetching, setIsFetching] = useState<boolean>(true); // Renamed from isLoading
 
-  const fetchWishlistItems = async () => {
-    // Renamed from fetchWishlistProduct
-    try {
-      const response = await fetch(`http://localhost:5000/api/wishlist`);
-      const { data, success } = await response.json();
-
-      if (success) {
-        setWishlistItems(data);
-      }
-    } catch (error) {
-      console.error("Error fetching wishlist items:", error); // Updated error message
-    } finally {
-      setIsFetching(false);
-    }
-  };
-
-  const removeWishlistItem = async (id: string) => {
-    // Renamed from handleDelete
-    try {
-      const response = await fetch(`http://localhost:5000/api/wishlist/${id}`, {
-        method: "DELETE",
-      });
-      const { success, message } = await response.json();
-
-      if (success) {
-        toast.success("Item removed from wishlist!");
-        setWishlistItems((prevItems) =>
-          prevItems.filter((item) => item._id !== id)
-        ); // Renamed to reflect removal of item from wishlist
-      } else {
-        toast.error(message || "Failed to remove item.");
-      }
-    } catch (error) {
-      console.error("Error deleting wishlist item: ", error); // Updated error message
-      toast.error("An error occurred while removing the item.");
-    }
-  };
-
   useEffect(() => {
-    fetchWishlistItems();
+    console.log("CURRENT USER: ", currentUser);
+    if (currentUser) {
+      const fetchWishlistItems = async () => {
+        try {
+          const fetchedItems = await Promise.all(
+            currentUser.wishlists.map(async (itemID: string) => {
+              console.log("USER WISHLIST: ", itemID);
+              try {
+                const data = await fetchSingleProduct(itemID);
+                console.log("WISHLIST DATA: ", data);
+                return data.data; // Return product data
+              } catch (error) {
+                console.error(
+                  `Error fetching product with ID ${itemID}:`,
+                  error
+                );
+                return null; // Return null for missing products
+              }
+            })
+          );
+
+          // Filter out any null values in case some products were not found
+          setWishlistItems(fetchedItems.filter((item) => item !== null));
+          console.log("WISHLIST ITEMS: ", wishlistItems);
+
+          setIsFetching(false);
+        } catch (error) {
+          console.error("Error fetching wishlist items:", error);
+          setIsFetching(false);
+        }
+      };
+
+      fetchWishlistItems();
+    } else {
+      navigate("/signin");
+    }
   }, []);
 
+  const deleteWishlist = async (product: any) => {
+    const { success, message } = await deleteUserWishlist(product);
+  
+    if (success) {
+      console.log("PRODUCT REMOVED FROM WISHLIST");
+
+      // Remove the deleted product from local state
+      setWishlistItems((prevItems) =>
+        prevItems.filter((item) => item._id !== product._id)
+      );
+
+      // Optionally show a success toast
+      toast.success("Product removed from wishlist!");
+    } else {
+      console.error(message);
+      toast.error(message || "Failed to remove product from wishlist");
+    }
+  };
   return (
     <div className="w-[90%] m-auto mt-4 max-w-[1200px] pb-52">
       <Toaster
@@ -86,7 +106,8 @@ const WishlistPage = () => {
               title={item.title}
               discount={item.discount}
               price={item.price}
-              onDelete={removeWishlistItem} // Updated function name
+              product={item}
+              onDelete={deleteWishlist} // Updated function name
             />
           ))}
         </div>

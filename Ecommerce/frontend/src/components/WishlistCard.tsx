@@ -9,7 +9,8 @@ interface ProductProps {
   title: string;
   discount: number;
   price: number;
-  onDelete: (id: string) => void;
+  product: any;
+  onDelete: (product: any) => void;
 }
 
 const WishlistCard: React.FC<ProductProps> = ({
@@ -18,6 +19,7 @@ const WishlistCard: React.FC<ProductProps> = ({
   title,
   discount,
   price,
+  product,
   onDelete,
 }) => {
   const discountedPrice = (price - price * (discount / 100)).toFixed(2);
@@ -29,7 +31,7 @@ const WishlistCard: React.FC<ProductProps> = ({
     >
       <div
         className="absolute bg-gray-200 rounded-full items-center justify-center p-1 right-2 top-2"
-        onClick={() => onDelete(_id)} // Call the parent's delete function
+        onClick={() => onDelete(product)} // Call the parent's delete function
       >
         <DeleteOutlinedIcon fontSize="medium" />
       </div>

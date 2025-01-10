@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+gsap.registerPlugin(useGSAP);
 import { Link, useNavigate } from "react-router-dom";
 //RATING MUI ICONS
 import Rating from "@mui/material/Rating";
@@ -13,11 +15,17 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 //RELATED ITEMS
 import RelatedItems from "../components/RelatedItems";
 
-import { useProductStore } from "../../store/product";
+import { useProductStore, useUserStore } from "../../store/product";
 
 //TOASTER
 import toast, { Toaster } from "react-hot-toast";
+
 const ProductPage = () => {
+  const navigate = useNavigate();
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
   interface Product {
     _id: string;
     title: string;
@@ -31,6 +39,18 @@ const ProductPage = () => {
     rating: number;
     ratingCount: number;
   }
+
+  interface User {
+    _id: string;
+    name: string;
+    email: string;
+    password?: string;
+    carts: Product[];
+    wishlists: Product[];
+  }
+
+  const { currentUser, addUserWishlist, deleteUserWishlist } = useUserStore();
+
   const { id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -46,13 +66,18 @@ const ProductPage = () => {
   const [activeTab, setActiveTab] = useState("");
   const [quantity, setQuantity] = useState(1);
 
+  const [isAddedWishlist, setIsAddedWishlist] = useState(false);
+
+  //Fetching Single Product
   const fetchSingleProduct = async (id: string) => {
     const res = await fetch(`http://localhost:5000/${id}`);
     const { data, success } = await res.json();
+
     setIsSuccess(success);
-    console.log(data);
     setProduct(data);
-    checkIfInWishlist(data.title);
+
+    if (currentUser?.wishlists.includes(data._id)) setIsAddedWishlist(true);
+
     setMobileTabs([
       { title: "Description", active: true, content: data.description },
       // { title: "Specification", active: false, content: "" },
@@ -71,60 +96,85 @@ const ProductPage = () => {
     }
   }, [id]);
 
-  const navigate = useNavigate();
-
-  const handleBackClick = () => {
-    navigate(-1);
-  };
-
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  const {
-    addToWishlist,
-    wishlists,
-    fetchWishlists,
-    deleteWishlist,
-    user,
-    fetchUser,
-  } = useProductStore();
-
   const toggleWishlist = async (product: Product) => {
-    if (!user._id) {
+    if (!currentUser) {
       navigate("/signin");
-    }
-    const { success, message } = await addToWishlist(product);
-    if (success) {
-      console.log(message); // Handle success case
     } else {
-      console.log("BUGGED");
-      console.error(message); // Handle error case
+      console.log("PRODUCT: ", product, "   CURRENT USER: ", currentUser);
+      const { success, message } = await addUserWishlist(product);
+      if (success) {
+        console.log("SUCCESS ADDING WISHLIST");
+      } else {
+        console.log("ERROR ADDING WISHLIST: ");
+        console.error(message); // Handle error case
+      }
     }
   };
 
+  const deleteWishlist = async (product: any) => {
+    const { success, message } = await deleteUserWishlist(product, currentUser);
+    if (success) console.log("PRODUCT REMOVED FROM WISHLIST");
+    else console.error(message);
+  };
+
+  const [cartToggled, setCartToggled] = useState(false);
+
   const toggleAddToCart = () => {
-    if (!user._id) {
+    if (!currentUser) {
       navigate("/signin");
+    } else {
+      onClickCartAnimation();
+      setCartToggled(true);
     }
   };
   //TOASTER
   const notifyWishlist = (message: string) => toast(message);
-  const [isAddedWishlist, setIsAddedWishlist] = useState(false);
 
-  const checkIfInWishlist = async (productName: string) => {
-    console.log("CHECKERRR: Fetching wishlists...");
-    await fetchWishlists(); // Ensure wishlists are fetched
-    const updatedWishlists = useProductStore.getState().wishlists; // Get the updated state
-    console.log("CHECKERRR: Updated Wishlists: ", updatedWishlists);
+  const container = useRef();
+  const { contextSafe } = useGSAP({ scope: container });
 
-    const found = updatedWishlists.some((item) => item.title === productName); // Check if product is in wishlist
-    console.log("FOUND: ", found);
-    setIsAddedWishlist(found);
-  };
+  const onClickCartAnimation = contextSafe(() => {
+    setCartToggled(true);
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    console.log(viewportHeight, "  ", viewportWidth);
+    gsap.from(".imgCart", {
+      opacity: 0.5,
+    });
+    gsap.to(".imgCart", {
+      x: viewportWidth - viewportWidth * 0.52,
+      y: "-130%",
+      scale: 0, // Optional: scale the element down
+      opacity: 0,
+      duration: 1.5,
+      onComplete: () => {
+        // Reset the position after the animation is complete
+        gsap.set(".imgCart", {
+          x: 0,
+          y: 0,
+          scale: 1,
+          opacity: 0,
+        });
+      },
+    });
+  });
 
   return (
     <div className="p-5 max-w-[1200px] mx-auto">
+      <div
+        className="absolute flex-1  z-10 w-[90%] h-52 flex items-center justify-center"
+        ref={container}
+      >
+        <img
+          src={product?.image}
+          alt={product?.title}
+          className="  imgCart w-[100%] max-w-[200px] mt-36 sm:mt-52 md:mt-80 md:mr-44 opacity-0"
+        />
+      </div>
       <Toaster
         position="top-center"
         toastOptions={{
@@ -147,17 +197,16 @@ const ProductPage = () => {
         <div
           className="bg-[#F5F5F5] flex w-4 h-4 p-4 items-center justify-center rounded-full cursor-pointer md:hidden"
           onClick={() => {
-            product && toggleWishlist(product);
             setIsAddedWishlist(!isAddedWishlist);
             if (!isAddedWishlist) {
-              if (product) {
-                addToWishlist(product);
+              if (product?._id) {
+                toggleWishlist(product);
               }
               notifyWishlist("❤️ Added to Wishlist!");
             } else {
               notifyWishlist("Removed to Wishlist!");
               if (product?._id) {
-                deleteWishlist(product._id);
+                deleteWishlist(product);
               }
             }
           }}
@@ -272,7 +321,7 @@ const ProductPage = () => {
                   setIsAddedWishlist(!isAddedWishlist);
                   if (!isAddedWishlist) {
                     if (product) {
-                      addToWishlist(product);
+                      toggleWishlist(product);
                     }
                     notifyWishlist("❤️ Added to Wishlist!");
                   } else {
@@ -350,7 +399,10 @@ const ProductPage = () => {
             <AddIcon className="text-white" />
           </button>
         </div>
-        <button className="bg-redAccent text-white w-full h-10 shadow-lg rounded-md col-span-4 ">
+        <button
+          className="bg-redAccent text-white w-full h-10 shadow-lg rounded-md col-span-4 "
+          onClick={toggleAddToCart}
+        >
           Add to Cart
         </button>
       </div>
