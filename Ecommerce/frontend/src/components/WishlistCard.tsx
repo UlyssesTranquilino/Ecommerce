@@ -2,6 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import { Link, useNavigate } from "react-router-dom";
+//TOASTER
+import toast, { Toaster } from "react-hot-toast";
+import { useProductStore, useUserStore } from "../../store/product";
 
 interface ProductProps {
   _id: string;
@@ -11,6 +15,7 @@ interface ProductProps {
   price: number;
   product: any;
   onDelete: (product: any) => void;
+  onAddCart: (product: any) => void;
 }
 
 const WishlistCard: React.FC<ProductProps> = ({
@@ -21,6 +26,7 @@ const WishlistCard: React.FC<ProductProps> = ({
   price,
   product,
   onDelete,
+  onAddCart,
 }) => {
   const discountedPrice = (price - price * (discount / 100)).toFixed(2);
 
@@ -44,7 +50,9 @@ const WishlistCard: React.FC<ProductProps> = ({
 
       <div className="bg-black h-10 text-white flex items-center justify-center text-sm">
         <ShoppingCartOutlinedIcon fontSize="small" />
-        <div className="pl-2">Add To Cart</div>
+        <div className="pl-2" onClick={() => onAddCart(product)}>
+          Add To Cart
+        </div>
       </div>
 
       <Link to={`/product/${_id}`}>
@@ -54,7 +62,10 @@ const WishlistCard: React.FC<ProductProps> = ({
             {discount ? (
               <>
                 <p className="font-medium text-redAccent mr-2">
-                  ${discountedPrice}
+                  ${" "}
+                  {(price - price * ((discount ? discount : 0) / 100)).toFixed(
+                    2
+                  )}
                 </p>
                 <p className="font-medium text-gray-500 line-through">
                   ${price.toFixed(2)}
