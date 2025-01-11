@@ -11,7 +11,7 @@ import { useProductStore, useUserStore } from "../../store/product";
 
 const WishlistPage = () => {
   const navigate = useNavigate();
-  const { currentUser, deleteUserWishlist } = useUserStore();
+  const { currentUser, deleteUserWishlist, addUserCart } = useUserStore();
   const { fetchSingleProduct } = useProductStore();
 
   const [wishlistItems, setWishlistItems] = useState<Product[]>([]); // Renamed from categoryProduct
@@ -24,7 +24,6 @@ const WishlistPage = () => {
         try {
           const fetchedItems = await Promise.all(
             currentUser.wishlists.map(async (itemID: string) => {
-              console.log("USER WISHLIST: ", itemID);
               try {
                 const data = await fetchSingleProduct(itemID);
                 console.log("WISHLIST DATA: ", data);
@@ -58,7 +57,7 @@ const WishlistPage = () => {
 
   const deleteWishlist = async (product: any) => {
     const { success, message } = await deleteUserWishlist(product);
-  
+
     if (success) {
       console.log("PRODUCT REMOVED FROM WISHLIST");
 
@@ -74,6 +73,35 @@ const WishlistPage = () => {
       toast.error(message || "Failed to remove product from wishlist");
     }
   };
+
+  const toggleAddToCart = async (product: any) => {
+    if (!currentUser) {
+      navigate("/signin");
+    } else {
+      let productPrice: number | string;
+      if (product?.discount != null)
+        productPrice = (
+          product?.price -
+          product?.price * (product?.discount / 100)
+        ).toFixed(2);
+      else productPrice = product?.price;
+
+      const { success, message } = await addUserCart({
+        _id: product?._id,
+        price: productPrice,
+        quantity: 1,
+        model: product?.model,
+        color: product?.color,
+      });
+
+      if (success) {
+        toast("✅  Product added to cart!");
+      } else {
+        toast("Failed added to cart!");
+      }
+    }
+  };
+
   return (
     <div className="w-[90%] m-auto mt-4 max-w-[1200px] pb-52">
       <Toaster
@@ -108,6 +136,7 @@ const WishlistPage = () => {
               price={item.price}
               product={item}
               onDelete={deleteWishlist} // Updated function name
+              onAddCart={toggleAddToCart}
             />
           ))}
         </div>

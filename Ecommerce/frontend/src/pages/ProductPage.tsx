@@ -49,7 +49,8 @@ const ProductPage = () => {
     wishlists: Product[];
   }
 
-  const { currentUser, addUserWishlist, deleteUserWishlist } = useUserStore();
+  const { currentUser, addUserWishlist, deleteUserWishlist, addUserCart } =
+    useUserStore();
 
   const { id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
@@ -123,12 +124,34 @@ const ProductPage = () => {
 
   const [cartToggled, setCartToggled] = useState(false);
 
-  const toggleAddToCart = () => {
+  const toggleAddToCart = async (device: string) => {
     if (!currentUser) {
       navigate("/signin");
     } else {
-      onClickCartAnimation();
       setCartToggled(true);
+
+      let productPrice: number;
+      if (product?.discount != null)
+        productPrice = (
+          product?.price -
+          product?.price * (product?.discount / 100)
+        ).toFixed(2);
+      else productPrice = product?.price;
+
+      const { success, message } = await addUserCart({
+        _id: product?._id,
+        price: productPrice,
+        quantity: quantity,
+        model: product?.model,
+        color: product?.color,
+      });
+
+      if (success) {
+        if (device == "mobile") onClickCartAnimation();
+        toast("✅  Product added to cart!");
+      } else {
+        toast("Failed added to cart!");
+      }
     }
   };
   //TOASTER
@@ -141,14 +164,14 @@ const ProductPage = () => {
     setCartToggled(true);
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    console.log(viewportHeight, "  ", viewportWidth);
+
     gsap.from(".imgCart", {
-      opacity: 0.5,
+      opacity: 0.4,
     });
     gsap.to(".imgCart", {
       x: viewportWidth - viewportWidth * 0.52,
-      y: "-130%",
-      scale: 0, // Optional: scale the element down
+      y: "-120%",
+      scale: 0,
       opacity: 0,
       duration: 1.5,
       onComplete: () => {
@@ -189,8 +212,10 @@ const ProductPage = () => {
       />
       <div className="flex justify-between items-center mb-4">
         <div
-          onClick={handleBackClick}
-          className="bg-gray-300 w-7 h-7 rounded-full flex items-center justify-center cursor-pointer"
+          className="relative z-20 bg-gray-300 w-7 h-7 rounded-full flex items-center justify-center cursor-pointer"
+          onClick={() => {
+            handleBackClick();
+          }}
         >
           <ArrowBackIcon fontSize="small" />
         </div>
@@ -250,7 +275,7 @@ const ProductPage = () => {
                       product.price -
                       product.price * (product.discount / 100)
                     ).toFixed(2)
-                  : "Price not available"}
+                  : product?.price}
               </h1>
             </div>
 
@@ -310,7 +335,7 @@ const ProductPage = () => {
               </div>
               <button
                 className="bg-redAccent text-white w-full h-11 shadow-lg rounded-md col-span-4 "
-                onClick={toggleAddToCart}
+                onClick={() => toggleAddToCart("large")}
               >
                 Add to Cart
               </button>
@@ -401,7 +426,7 @@ const ProductPage = () => {
         </div>
         <button
           className="bg-redAccent text-white w-full h-10 shadow-lg rounded-md col-span-4 "
-          onClick={toggleAddToCart}
+          onClick={() => toggleAddToCart("mobile")}
         >
           Add to Cart
         </button>

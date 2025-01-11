@@ -47,9 +47,12 @@ const Navbar = () => {
             )}
           </button>
         </Link>
-        <button className="mr-3">
-          <ShoppingCartOutlinedIcon />
-        </button>
+
+        <Link to="/cart">
+          <button className="mr-3">
+            <ShoppingCartOutlinedIcon />
+          </button>
+        </Link>
 
         {/* <button className="mr-3 text-black bg-white rounded-md flex items-center">
           <DarkModeOutlinedIcon />

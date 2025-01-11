@@ -259,6 +259,7 @@ export const useUserStore = create(
           );
 
           const result = await response.json();
+          console.log("RESULT: ", result);
 
           if (!response.ok) {
             console.error("Add to Cart API Error:", result.message);
