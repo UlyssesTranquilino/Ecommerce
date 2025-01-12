@@ -105,8 +105,12 @@ const ProductPage = () => {
     if (!currentUser) {
       navigate("/signin");
     } else {
-      console.log("PRODUCT: ", product, "   CURRENT USER: ", currentUser);
-      const { success, message } = await addUserWishlist(product);
+      let success: boolean, message: string;
+      if (!isAddedWishlist) {
+        ({ success, message } = await addUserWishlist(product));
+      } else {
+        ({ success, message } = await deleteUserWishlist(product, currentUser));
+      }
       if (success) {
         console.log("SUCCESS ADDING WISHLIST");
       } else {
@@ -114,12 +118,6 @@ const ProductPage = () => {
         console.error(message); // Handle error case
       }
     }
-  };
-
-  const deleteWishlist = async (product: any) => {
-    const { success, message } = await deleteUserWishlist(product, currentUser);
-    if (success) console.log("PRODUCT REMOVED FROM WISHLIST");
-    else console.error(message);
   };
 
   const [cartToggled, setCartToggled] = useState(false);
@@ -220,18 +218,19 @@ const ProductPage = () => {
           <ArrowBackIcon fontSize="small" />
         </div>
         <div
-          className="bg-[#F5F5F5] flex w-4 h-4 p-4 items-center justify-center rounded-full cursor-pointer md:hidden"
+          className="relative z-20 bg-[#F5F5F5] flex w-4 h-4 p-4 items-center justify-center rounded-full cursor-pointer md:hidden"
           onClick={() => {
+            product && toggleWishlist(product);
             setIsAddedWishlist(!isAddedWishlist);
             if (!isAddedWishlist) {
-              if (product?._id) {
+              if (product) {
                 toggleWishlist(product);
               }
               notifyWishlist("❤️ Added to Wishlist!");
             } else {
               notifyWishlist("Removed to Wishlist!");
               if (product?._id) {
-                deleteWishlist(product);
+                deleteWishlist(product._id);
               }
             }
           }}

@@ -16,6 +16,9 @@ export default withMT({
         button: "rgba(var(--button))",
         stars: "rgba(var(--stars))",
       },
+      screens: {
+        xs: "480px",
+      },
     },
   },
   plugins: [],
