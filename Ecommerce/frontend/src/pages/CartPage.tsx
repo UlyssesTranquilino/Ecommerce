@@ -93,10 +93,14 @@ const CartPage = () => {
     }
   };
 
-  const [checked, setChecked] = React.useState(true);
+  const [allChecked, setAllChecked] = React.useState(false);
+
+  const handleAllCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("ALL TOGGLED");
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked(event.target.checked);
+    console.log("TOGGLED");
   };
 
   return (
@@ -121,7 +125,7 @@ const CartPage = () => {
         <div>
           <div className="flex items-center mt-10">
             <div className="w-4 h-10 bg-redAccent rounded-md"></div>
-            <h1 className="text-redAccent font-semibold text-xl ml-3">
+            <h1 className="text-redAccent font-semibold text-lg xs:text-xl ml-3">
               Shopping Cart{" "}
               <span className="text-gray-600">
                 {"(" + cartItems.length + ")"}
@@ -136,7 +140,7 @@ const CartPage = () => {
                   className="w-full h-auto flex items-center border-y-2 border-b-gray-200 bg-white relative"
                 >
                   <Checkbox
-                    checked={checked}
+                    checked={item.toggled}
                     onChange={handleChange}
                     inputProps={{ "aria-label": "controlled" }}
                     sx={{
@@ -147,13 +151,13 @@ const CartPage = () => {
                     }}
                   />
 
-                  <div className="ml-2 w-full grid grid-cols-4">
+                  <div className="ml-2 w-full grid grid-cols-5">
                     <Link to={`/product/${item.product._id}`}>
-                      <div className="rounded-t-lg w-full flex items-center justify-center py-2 ">
+                      <div className="rounded-t-lg w-full flex items-center justify-center py-2 h-full ">
                         <img
                           src={item.product.image}
                           alt={item.product.title}
-                          className="w-28 h-28 object-cover"
+                          className="w-20 h-20 xs:w-28 xs:h-28 object-cover"
                         />
                       </div>
                     </Link>
@@ -162,9 +166,13 @@ const CartPage = () => {
                       <h1 className="text-ellipsis line-clamp-1 overflow-hidden text-xs ">
                         {item.product.title}
                       </h1>
-                      <div className="text-xs bg-gray-200 rounded-sm w-16 flex h-auto p-1 mt-1">
+                      <p
+                        className="text-xs bg-gray-200 rounded-sm flex h-auto w-cover
+                     p-1 mt-1"
+                        style={{ width: `${item.color.length * 8.5}px` }}
+                      >
                         {item.color}
-                      </div>
+                      </p>
 
                       <div className="mt-6 flex items-center  ">
                         <h1 className="text-redAccent text-sm">
@@ -187,9 +195,39 @@ const CartPage = () => {
                         )}
                       </div>
                     </div>
+                    <div className="py-4 flex justify-end ">
+                      <button className="text-xs text-gray-600">Edit</button>
+                    </div>
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="fixed h-24 w-[90%] bottom-0 bg-white ">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Checkbox
+                  checked={allChecked}
+                  onChange={handleAllCheckChange}
+                  inputProps={{ "aria-label": "controlled" }}
+                  sx={{
+                    color: "primary",
+                    "&.Mui-checked": {
+                      color: green[600],
+                    },
+                  }}
+                />
+                <h1>All</h1>
+              </div>
+              <div className="mr-20">
+                <h1>Subtotal: </h1>
+              </div>
+            </div>
+            <div className="flex items-center w-[100%] ">
+              <button className="bg-redAccent h-12 w-[100%] rounded-md text-white px-3  bottom-0">
+                Check Out
+              </button>
             </div>
           </div>
         </div>

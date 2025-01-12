@@ -19,6 +19,7 @@ userRouter.delete("/user/wishlist/:id", deleteUserWishlistHanlder);
 
 //CART
 userRouter.post("/user/cart/:id", addUserCartHandler);
+userRouter.put("/user/cart/:id");
 
 userRouter.post("/user/signin", SignInUserHandler);
 userRouter.post("/user/signup", SignUpUserHandler);
