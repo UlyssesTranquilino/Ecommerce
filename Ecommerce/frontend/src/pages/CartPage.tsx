@@ -93,14 +93,37 @@ const CartPage = () => {
     }
   };
 
-  const [allChecked, setAllChecked] = React.useState(false);
+  const [allChecked, setAllChecked] = useState(false);
+  const [subTotal, setSubtotal] = useState(0);
 
   const handleAllCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("ALL TOGGLED");
+    setAllChecked(!allChecked);
+    setCartItems((prevItems) =>
+      prevItems.map((product) => {
+        return { ...product, toggled: allChecked ? false : true };
+      })
+    );
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("TOGGLED");
+  const handleChange = (id: string) => {
+    console.log("TOGGLED", id); // Changed event to id for clarity
+    setCartItems((prevItems) =>
+      prevItems.map((product) => {
+        if (product.product._id === id) {
+          if (!product.toggled)
+            setSubtotal((prevSubTotal) =>
+              parseFloat((prevSubTotal + product.subTotal).toFixed(2))
+            );
+          else
+            setSubtotal((prevSubTotal) =>
+              parseFloat((prevSubTotal - product.subTotal).toFixed(2))
+            );
+          return { ...product, toggled: !product.toggled };
+        } else {
+          return product;
+        }
+      })
+    );
   };
 
   return (
@@ -141,7 +164,7 @@ const CartPage = () => {
                 >
                   <Checkbox
                     checked={item.toggled}
-                    onChange={handleChange}
+                    onChange={() => handleChange(item.product._id)}
                     inputProps={{ "aria-label": "controlled" }}
                     sx={{
                       color: "primary",
@@ -193,9 +216,21 @@ const CartPage = () => {
                             ${item.product.price.toString().toLocaleString()}
                           </p>
                         )}
+
+                        <div className="absolute right-0">
+                          <div className="flex gap-2 items-center border-[1px]  border-gray-500">
+                            <button className="text-xs border-r-[1px] border-gray-500 px-2">
+                              -
+                            </button>
+                            <div className="text-xs">{item.quantity}</div>
+                            <button className="text-xs border-l-[1px] border-gray-500 px-2">
+                              +
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="py-4 flex justify-end ">
+                    <div className="pt-3 flex justify-end h-20 ">
                       <button className="text-xs text-gray-600">Edit</button>
                     </div>
                   </div>
@@ -221,7 +256,7 @@ const CartPage = () => {
                 <h1>All</h1>
               </div>
               <div className="mr-20">
-                <h1>Subtotal: </h1>
+                <h1>Subtotal: ${subTotal.toLocaleString()}</h1>
               </div>
             </div>
             <div className="flex items-center w-[100%] ">
