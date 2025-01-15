@@ -287,7 +287,50 @@ export const useUserStore = create(
           };
         }
       },
-      
+
+      deleteUserCart: async (productID: string) => {
+        let currentUser: User | null = get()?.currentUser;
+        currentUser = normalizeUser(currentUser);
+
+        console.log(JSON.stringify(productID));
+
+        if (!currentUser) {
+          console.error("No user logged in");
+          return { success: false, message: "Failed removing from cart" };
+        }
+
+        try {
+          const response = await fetch(
+            `http://localhost:5000/user/cart/${currentUser._id}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(productID),
+            }
+          );
+
+          const result = await response.json();
+          console.log("RESULT DELETE: ", result);
+
+          if (!response.ok) {
+            console.error("Error deleting from cart:", result.message);
+            return { success: false, message: result.message };
+          }
+
+          currentUser.carts = result.carts;
+
+          set({
+            currentUser: currentUser,
+          });
+
+          return { success: true, message: "PRODUCT REMOVED FROM WISHLIST!" };
+        } catch (error) {
+          console.error("Error removing from wishlist:", error);
+          return { success: false, message: "An error occurred" };
+        }
+      },
     }),
     {
       name: "user-storage",

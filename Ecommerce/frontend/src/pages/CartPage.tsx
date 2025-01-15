@@ -11,9 +11,14 @@ import { useProductStore, useUserStore } from "../../store/product";
 
 import { Checkbox } from "@mui/material";
 import { green } from "@mui/material/colors";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+
+import "react-dropdown/style.css";
+
 const CartPage = () => {
   const navigate = useNavigate();
-  const { currentUser, deleteUserWishlist, addUserCart } = useUserStore();
+  const { currentUser, deleteUserWishlist, addUserCart, deleteUserCart } =
+    useUserStore();
   const { fetchSingleProduct } = useProductStore();
 
   interface Cart {
@@ -95,6 +100,7 @@ const CartPage = () => {
 
   const [allChecked, setAllChecked] = useState(false);
   const [subTotal, setSubtotal] = useState(0);
+  const [checkItems, setCheckItems] = useState<string>();
 
   const handleAllCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAllChecked(!allChecked);
@@ -110,6 +116,7 @@ const CartPage = () => {
     setCartItems((prevItems) =>
       prevItems.map((product) => {
         if (product.product._id === id) {
+          setCheckItems(id);
           if (!product.toggled)
             setSubtotal((prevSubTotal) =>
               parseFloat((prevSubTotal + product.subTotal).toFixed(2))
@@ -124,6 +131,19 @@ const CartPage = () => {
         }
       })
     );
+  };
+
+  const options = ["Edit", "Delete"];
+  const defaultOption = options[0];
+
+  const toggleDelete = () => {
+    const { success, message } = deleteUserCart({ _id: checkItems });
+
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.product._id != checkItems)
+    );
+
+    console.log("MESSAGE: ", cartItems);
   };
 
   return (
@@ -154,13 +174,21 @@ const CartPage = () => {
                 {"(" + cartItems.length + ")"}
               </span>
             </h1>
+
+            <div
+              className="cursor-pointer absolute right-2 flex h-7 w-7 items-center justify-center bg-gray-200 rounded-full"
+              onClick={toggleDelete}
+            >
+              <DeleteOutlineIcon fontSize="small" />
+            </div>
           </div>
+
           <div className="mt-14">
             <div className="grid gap-4">
               {cartItems.map((item) => (
                 <div
                   key={item._id}
-                  className="w-full h-auto flex items-center border-y-2 border-b-gray-200 bg-white relative"
+                  className=" w-full h-auto flex items-center border-y-2 border-b-gray-200 bg-white relative"
                 >
                   <Checkbox
                     checked={item.toggled}
@@ -180,7 +208,7 @@ const CartPage = () => {
                         <img
                           src={item.product.image}
                           alt={item.product.title}
-                          className="w-20 h-20 xs:w-28 xs:h-28 object-cover"
+                          className=" xs:w-28 xs:h-28 object-fit"
                         />
                       </div>
                     </Link>
@@ -230,9 +258,9 @@ const CartPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="pt-3 flex justify-end h-20 ">
-                      <button className="text-xs text-gray-600">Edit</button>
-                    </div>
+                    {/* <div className="absolute  right-0 flex h-6 w-6 items-center justify-center bg-red-500 rounded-full">
+                      <DeleteOutlineIcon className="text-white " fontSize="2" />
+                    </div> */}
                   </div>
                 </div>
               ))}
@@ -295,3 +323,6 @@ const CartPage = () => {
 };
 
 export default CartPage;
+function setWishlistItems(arg0: (prevItems: any) => any) {
+  throw new Error("Function not implemented.");
+}

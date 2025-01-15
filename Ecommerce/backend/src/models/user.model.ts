@@ -23,7 +23,10 @@ const userSchema = new mongoose.Schema(
     },
     carts: [
       {
-        _id: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+        },
         quantity: { type: Number, required: true, default: 1 },
         subTotal: { type: Number, required: false, default: 0 },
         model: { type: String, required: false },
