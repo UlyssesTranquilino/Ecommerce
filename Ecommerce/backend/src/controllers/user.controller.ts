@@ -201,3 +201,63 @@ export const addUserCartHandler = async (
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const updateUserCartHandler = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const { id } = req.params;
+  const cartItem = req.body;
+  console.log("CART ITEM : ", cartItem);
+
+  try {
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.carts.forEach((item) => {
+      if (item._id?.equals(cartItem._id)) {
+        item.set({
+          quantity: item.quantity + cartItem.quantity,
+          model: cartItem.model,
+          subTotal: cartItem.subTotal,
+          color: cartItem.color,
+        });
+      }
+    });
+
+    await user.save();
+    console.log("USER CART: ", user);
+    res.json({ message: "Cart updated", data: user });
+  } catch (error) {
+    console.error("Error updating cart: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteUserCartHandler = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const { id } = req.params;
+  const productID = req.body;
+
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.carts.pull({ _id: productID._id });
+
+    await user.save();
+    res.status(200).json({
+      message: "Product removed from cart",
+      carts: user.carts,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error removing product from wishlist", error });
+  }
+};
