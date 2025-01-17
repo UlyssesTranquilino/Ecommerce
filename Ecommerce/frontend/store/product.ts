@@ -287,12 +287,11 @@ export const useUserStore = create(
           };
         }
       },
-
-      deleteUserCart: async (productID: string) => {
+      deleteUserCart: async (productID: string[]) => {
         let currentUser: User | null = get()?.currentUser;
         currentUser = normalizeUser(currentUser);
 
-        console.log(JSON.stringify(productID));
+        console.log("ZUSTAND ", JSON.stringify(productID));
 
         if (!currentUser) {
           console.error("No user logged in");
@@ -329,6 +328,47 @@ export const useUserStore = create(
         } catch (error) {
           console.error("Error removing from wishlist:", error);
           return { success: false, message: "An error occurred" };
+        }
+      },
+      updateUserCart: async (product: Partial<Cart>) => {
+        let currentUser: User | null = get()?.currentUser;
+        currentUser = normalizeUser(currentUser);
+
+        console.log("PARTIA: ", product);
+        if (!currentUser) {
+          console.error("No user logged in");
+          return { success: false, message: "FAILED ADDING TO WISHLIST" };
+        }
+
+        try {
+          const response = await fetch(
+            `http://localhost:5000/user/cart/${currentUser._id}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(product),
+            }
+          );
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            console.error("Error adding to wishlist:", result.message);
+            return {
+              success: false,
+              message: "PRODUCT ERROR UPDATING TO CART!",
+            };
+          }
+
+          set({
+            currentUser: normalizeUser(result.data),
+          });
+
+          return { success: true, message: "Product updated to cart!" };
+        } catch (error) {
+          console.error("Error updating cart:", error);
         }
       },
     }),

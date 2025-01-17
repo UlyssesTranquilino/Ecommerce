@@ -4,6 +4,8 @@ import axios from "axios";
 
 import { useProductStore } from "../../store/product";
 
+import cartSignin from "../assets/Images/Cart.png";
+
 const SignUpPage = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -38,8 +40,8 @@ const SignUpPage = () => {
     }
   };
   return (
-    <div className="mt-10 w-[90%] m-auto max-w-[1200px]">
-      <div className="border-2 border-gray-200 shadow-md p-5 rounded-lg max-w-[400px] m-auto ">
+    <div className="mt-10 w-[90%] m-auto max-w-[1200px] md:flex ">
+      <div className="border-2 md:w-full border-gray-200 shadow-md md:shadow-none md:border-0 p-5 rounded-lg max-w-[400px] m-auto h-[420px] md:mt-8">
         <div className="mb-12 ">
           <h1 className="text-2xl text-redAccent font-semibold">
             Create an Account
@@ -100,6 +102,10 @@ const SignUpPage = () => {
             <h1 className="underline">Sign in</h1>
           </Link>
         </div>
+      </div>
+
+      <div className="w-[60%] md:flex items-center justify-center bg-[#CBE4E8] hidden md:block p-3">
+        <img src={cartSignin} alt="Ecommerce cart" className="w-[350px]" />
       </div>
     </div>
   );

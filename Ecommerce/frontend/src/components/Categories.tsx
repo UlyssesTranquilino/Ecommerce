@@ -290,7 +290,7 @@ const Categories = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
         {productsToShow
           .filter((product: Product) => product.category === currCategory)
-          .slice(0, 10)
+          .slice(0, 8)
           .map((product: Product) => (
             <Link to={`/product/${product._id}`} key={product._id}>
               <ProductCard

@@ -4,8 +4,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
+
+import { useUserStore } from "../../store/product";
 
 const Navbar = () => {
   const [showSignin, setShowSignin] = useState(true);
@@ -13,6 +16,11 @@ const Navbar = () => {
 
   const location = useLocation(); // Get the current location
   const isWishlistActive = location.pathname === "/wishlist"; // Check if the path is /wishlist
+  const isCartActive = location.pathname === "/cart";
+
+  const { currentUser } = useUserStore();
+
+  console.log("NAV BAR CURRENT USER: ", currentUser);
 
   return (
     <nav className="bg-black text-white h-12 flex items-center justify-between">
@@ -35,23 +43,45 @@ const Navbar = () => {
           </Link>
         )}
         <Link to={"/wishlist"}>
-          <button
-            className={`mr-3 ${
-              isWishlistActive ? "text-redAccent" : "text-white"
-            }`}
-          >
-            {isWishlistActive ? (
-              <FavoriteIcon className="text-redAccent" />
-            ) : (
-              <FavoriteBorderIcon />
+          <div className=" relative">
+            {!isWishlistActive && (currentUser?.wishlists?.length ?? 0) > 0 && (
+              <div className="bg-redAccent absolute left-3 rounded-full w-4 h-4 flex items-center justify-center">
+                <p className="text-white text-xs">
+                  {currentUser?.wishlists.length}
+                </p>
+              </div>
             )}
-          </button>
+            <button
+              className={`mr-3 ${
+                isWishlistActive ? "text-redAccent" : "text-white"
+              }`}
+            >
+              {isWishlistActive ? (
+                <FavoriteIcon className="text-redAccent" />
+              ) : (
+                <FavoriteBorderIcon />
+              )}
+            </button>
+          </div>
         </Link>
 
         <Link to="/cart">
-          <button className="mr-3">
-            <ShoppingCartOutlinedIcon />
-          </button>
+          <div className="relative">
+            {!isCartActive && (currentUser?.carts?.length ?? 0) > 0 && (
+              <div className="bg-redAccent absolute left-3 rounded-full w-4 h-4 flex items-center justify-center">
+                <p className="text-white text-xs">
+                  {currentUser?.carts.length}
+                </p>
+              </div>
+            )}
+            <button className="mr-3">
+              {isCartActive ? (
+                <ShoppingCartIcon />
+              ) : (
+                <ShoppingCartOutlinedIcon />
+              )}
+            </button>
+          </div>
         </Link>
 
         {/* <button className="mr-3 text-black bg-white rounded-md flex items-center">
