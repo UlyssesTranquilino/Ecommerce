@@ -115,30 +115,34 @@ const WishlistPage = () => {
           },
         }}
       />
-      <div className="flex items-center mt-10">
-        <div className="w-4 h-10 bg-redAccent rounded-md"></div>
-        <h1 className="text-redAccent font-semibold text-xl ml-3">Wishlist</h1>
-      </div>
 
       {isFetching ? (
         <div className="flex justify-center mt-24">
           <CircularProgress sx={{ color: "#DB4444" }} />
         </div>
       ) : wishlistItems.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
-          {wishlistItems.map((item) => (
-            <WishlistCard
-              key={item._id}
-              _id={item._id}
-              image={item.image}
-              title={item.title}
-              discount={item.discount}
-              price={item.price}
-              product={item}
-              onDelete={deleteWishlist} // Updated function name
-              onAddCart={toggleAddToCart}
-            />
-          ))}
+        <div>
+          <div className="flex items-center mt-10">
+            <div className="w-4 h-10 bg-redAccent rounded-md"></div>
+            <h1 className="text-redAccent font-semibold text-xl ml-3">
+              Wishlist
+            </h1>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
+            {wishlistItems.map((item) => (
+              <WishlistCard
+                key={item._id}
+                _id={item._id}
+                image={item.image}
+                title={item.title}
+                discount={item.discount}
+                price={item.price}
+                product={item}
+                onDelete={deleteWishlist} // Updated function name
+                onAddCart={toggleAddToCart}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <div className="flex flex-col items-center">

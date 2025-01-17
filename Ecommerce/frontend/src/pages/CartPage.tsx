@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import WishlistCard from "../components/WishlistCard";
-import EmptyWishlistImage from "../assets/Images/Empty Wishlist.png";
+import EmptyCartImage from "../assets/Images/Empty Cart.png";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { Product } from "../interfaces/Product";
@@ -17,8 +17,13 @@ import "react-dropdown/style.css";
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const { currentUser, deleteUserWishlist, addUserCart, deleteUserCart } =
-    useUserStore();
+  const {
+    currentUser,
+    deleteUserWishlist,
+    addUserCart,
+    deleteUserCart,
+    updateUserCart,
+  } = useUserStore();
   const { fetchSingleProduct } = useProductStore();
 
   interface Cart {
@@ -100,7 +105,7 @@ const CartPage = () => {
 
   const [allChecked, setAllChecked] = useState(false);
   const [subTotal, setSubtotal] = useState(0);
-  const [checkItems, setCheckItems] = useState<string>();
+  const [checkItems, setCheckItems] = useState<string[]>();
 
   const handleAllCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAllChecked(!allChecked);
@@ -116,7 +121,7 @@ const CartPage = () => {
     setCartItems((prevItems) =>
       prevItems.map((product) => {
         if (product.product._id === id) {
-          setCheckItems(id);
+          setCheckItems((prevItems) => (prevItems ? [...prevItems, id] : [id]));
           if (!product.toggled)
             setSubtotal((prevSubTotal) =>
               parseFloat((prevSubTotal + product.subTotal).toFixed(2))
@@ -139,13 +144,30 @@ const CartPage = () => {
   const toggleDelete = () => {
     const { success, message } = deleteUserCart({ _id: checkItems });
 
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.product._id != checkItems)
-    );
+    checkItems?.map((checkItem) => {
+      setCartItems((prevItems) =>
+        prevItems.filter((item) => item.product._id != checkItem)
+      );
+    });
 
-    console.log("MESSAGE: ", cartItems);
+    console.log("MESSAGE STRINGS: ", checkItems);
   };
 
+  const addQuantity = (productID: string) => {
+    const { success, message } = updateUserCart({
+      _id: productID,
+      quantity: 1,
+    });
+    console.log("UPDATE CART MESSAGE: ", message);
+  };
+
+  const decreaseQuantity = (productID: string) => {
+    const { success, message } = updateUserCart({
+      _id: productID,
+      quantity: -1,
+    });
+    console.log("UPDATE CART MESSAGE: ", message);
+  };
   return (
     <div className="w-[90%] m-auto mt-4 max-w-[1200px] pb-52 ">
       <Toaster
@@ -165,111 +187,128 @@ const CartPage = () => {
           <CircularProgress sx={{ color: "#DB4444" }} />
         </div>
       ) : cartItems.length > 0 ? (
-        <div>
-          <div className="flex items-center mt-10">
-            <div className="w-4 h-10 bg-redAccent rounded-md"></div>
-            <h1 className="text-redAccent font-semibold text-lg xs:text-xl ml-3">
-              Shopping Cart{" "}
-              <span className="text-gray-600">
-                {"(" + cartItems.length + ")"}
-              </span>
-            </h1>
+        <div className="md:grid  md:grid-cols-3 md:gap-8">
+          <div className="md:col-span-2">
+            <div className="flex items-center mt-10  relative">
+              <div className="w-4 h-10 bg-redAccent rounded-md"></div>
+              <h1 className="text-redAccent font-semibold text-lg xs:text-xl ml-3">
+                Shopping Cart{" "}
+                <span className="text-gray-600">
+                  {"(" + cartItems.length + ")"}
+                </span>
+              </h1>
 
-            <div
-              className="cursor-pointer absolute right-2 flex h-7 w-7 items-center justify-center bg-gray-200 rounded-full"
-              onClick={toggleDelete}
-            >
-              <DeleteOutlineIcon fontSize="small" />
+              <div
+                className="cursor-pointer absolute right-5 md:right-2 flex h-7 w-7 items-center justify-center bg-gray-200 rounded-full"
+                onClick={toggleDelete}
+              >
+                <DeleteOutlineIcon fontSize="small" />
+              </div>
             </div>
-          </div>
 
-          <div className="mt-14">
-            <div className="grid gap-4">
-              {cartItems.map((item) => (
-                <div
-                  key={item._id}
-                  className=" w-full h-auto flex items-center border-y-2 border-b-gray-200 bg-white relative"
-                >
-                  <Checkbox
-                    checked={item.toggled}
-                    onChange={() => handleChange(item.product._id)}
-                    inputProps={{ "aria-label": "controlled" }}
-                    sx={{
-                      color: "primary",
-                      "&.Mui-checked": {
-                        color: green[600],
-                      },
-                    }}
-                  />
+            <div className="mt-14">
+              <div className="grid gap-4">
+                {cartItems.map((item) => (
+                  <div
+                    key={item._id}
+                    className=" w-full h-auto flex items-center border-y-2 border-b-gray-200 bg-white relative"
+                  >
+                    <Checkbox
+                      checked={item.toggled}
+                      onChange={() => handleChange(item.product._id)}
+                      inputProps={{ "aria-label": "controlled" }}
+                      sx={{
+                        color: "primary",
+                        "&.Mui-checked": {
+                          color: green[600],
+                        },
+                      }}
+                    />
 
-                  <div className="ml-2 w-full grid grid-cols-5">
-                    <Link to={`/product/${item.product._id}`}>
-                      <div className="rounded-t-lg w-full flex items-center justify-center py-2 h-full ">
-                        <img
-                          src={item.product.image}
-                          alt={item.product.title}
-                          className=" xs:w-28 xs:h-28 object-fit"
-                        />
-                      </div>
-                    </Link>
+                    <div className="ml-2 w-full grid grid-cols-5">
+                      <Link to={`/product/${item.product._id}`}>
+                        <div className="rounded-t-lg w-full flex items-center justify-center py-2 h-full ">
+                          <img
+                            src={item.product.image}
+                            alt={item.product.title}
+                            className=" xs:w-28 xs:h-28 object-fit"
+                          />
+                        </div>
+                      </Link>
 
-                    <div className="w-36 ml-5 my-5 col-span-3">
-                      <h1 className="text-ellipsis line-clamp-1 overflow-hidden text-xs ">
-                        {item.product.title}
-                      </h1>
-                      <p
-                        className="text-xs bg-gray-200 rounded-sm flex h-auto w-cover
-                     p-1 mt-1"
-                        style={{ width: `${item.color.length * 8.5}px` }}
-                      >
-                        {item.color}
-                      </p>
-
-                      <div className="mt-6 flex items-center  ">
-                        <h1 className="text-redAccent text-sm">
-                          $
-                          {(
-                            item.product.price -
-                            item.product.price *
-                              ((item.product.discount
-                                ? item.product.discount
-                                : 0) /
-                                100)
-                          )
-                            .toFixed(2)
-                            .toLocaleString()}
+                      <div className="w-36 ml-5 my-5 col-span-3">
+                        <h1 className="text-ellipsis line-clamp-1 overflow-hidden text-xs ">
+                          {item.product.title}
                         </h1>
-                        {item.product.discount && (
-                          <p className="text-xs text-gray-500 line-through ml-1">
-                            ${item.product.price.toString().toLocaleString()}
+                        {item.color && (
+                          <p
+                            className="text-xs bg-gray-200 rounded-sm flex h-auto w-cover
+                     p-1 mt-1"
+                            style={{ width: `${item.color.length * 8.5}px` }}
+                          >
+                            {item.color}
                           </p>
                         )}
 
-                        <div className="absolute right-0">
-                          <div className="flex gap-2 items-center border-[1px]  border-gray-500">
-                            <button className="text-xs border-r-[1px] border-gray-500 px-2">
-                              -
-                            </button>
-                            <div className="text-xs">{item.quantity}</div>
-                            <button className="text-xs border-l-[1px] border-gray-500 px-2">
-                              +
-                            </button>
+                        <div className="mt-6 flex items-center  ">
+                          <h1 className="text-redAccent text-sm">
+                            $
+                            {(
+                              item.product.price -
+                              item.product.price *
+                                ((item.product.discount
+                                  ? item.product.discount
+                                  : 0) /
+                                  100)
+                            )
+                              .toFixed(2)
+                              .toLocaleString()}
+                          </h1>
+                          {item.product.discount && (
+                            <p className="text-xs text-gray-500 line-through ml-1">
+                              ${item.product.price.toString().toLocaleString()}
+                            </p>
+                          )}
+
+                          <div className="absolute right-0">
+                            <div className="flex gap-2 items-center border-[1px]  border-gray-500">
+                              <button
+                                className="text-xs border-r-[1px] border-gray-500 px-2"
+                                onClick={() =>
+                                  decreaseQuantity(item.product._id)
+                                }
+                              >
+                                -
+                              </button>
+                              <div className="text-xs">{item.quantity}</div>
+                              <button
+                                className="text-xs border-l-[1px] border-gray-500 px-2"
+                                onClick={() => addQuantity(item.product._id)}
+                              >
+                                +
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    {/* <div className="absolute  right-0 flex h-6 w-6 items-center justify-center bg-red-500 rounded-full">
+                      {/* <div className="absolute  right-0 flex h-6 w-6 items-center justify-center bg-red-500 rounded-full">
                       <DeleteOutlineIcon className="text-white " fontSize="2" />
                     </div> */}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="fixed h-24 w-[90%] bottom-0 bg-white ">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
+          <div className="fixed md:relative h-24 w-[90%] bottom-0 bg-gray-100 md:h-80 md:pt-12 p-4 ">
+            <div className="hidden mb-12 md:flex md:items-center ">
+              <h1 className="text-redAccent font-semibold text-md xs:text-xl">
+                Order Summary
+              </h1>
+            </div>
+            <div className="flex items-center justify-between ">
+              <div className="flex items-center relative mb-1">
                 <Checkbox
                   checked={allChecked}
                   onChange={handleAllCheckChange}
@@ -279,13 +318,22 @@ const CartPage = () => {
                     "&.Mui-checked": {
                       color: green[600],
                     },
+                    position: "absolute",
+                    left: -10,
                   }}
                 />
-                <h1>All</h1>
+                <h1 className="ml-8">All</h1>
               </div>
-              <div className="mr-20">
+              <div className="mr-20 md:mr-0 md:hidden">
                 <h1>Subtotal: ${subTotal.toLocaleString()}</h1>
               </div>
+            </div>
+            <div className="mr-20 md:block  hidden mb-1">
+              <h1>Subtotal: ${subTotal.toLocaleString()}</h1>
+            </div>
+
+            <div className="mb-1">
+              <h1>Shipping: Free</h1>
             </div>
             <div className="flex items-center w-[100%] ">
               <button className="bg-redAccent h-12 w-[100%] rounded-md text-white px-3  bottom-0">
@@ -297,16 +345,16 @@ const CartPage = () => {
       ) : (
         <div className="flex flex-col items-center">
           <img
-            src={EmptyWishlistImage} // Renamed for clarity
-            alt="Empty Wishlist"
-            className="w-40 mt-20"
+            src={EmptyCartImage} // Renamed for clarity
+            alt="Empty Cart"
+            className="w-64 mt-20"
           />
           <div className="text-center mt-10">
             <h1 className="font-extrabold text-redAccent text-lg">
               Your Cart is Empty!
             </h1>
             <p className="p-3 w-56 text-gray-700 text-sm">
-              Find something you love and add it here!
+              Start shopping to add items to your cart.
             </p>
             <div className="mt-10">
               <Link to="/">
