@@ -337,7 +337,11 @@ export const useUserStore = create(
         console.log("PARTIA: ", product);
         if (!currentUser) {
           console.error("No user logged in");
-          return { success: false, message: "FAILED ADDING TO WISHLIST" };
+          return {
+            success: false,
+            message: "FAILED ADDING TO WISHLIST",
+            updatedCart: currentUser ? (currentUser as User).carts : [],
+          };
         }
 
         try {
@@ -353,12 +357,14 @@ export const useUserStore = create(
           );
 
           const result = await response.json();
+          console.log("RESULT FROM UPDATED: ", result);
 
           if (!response.ok) {
             console.error("Error adding to wishlist:", result.message);
             return {
               success: false,
               message: "PRODUCT ERROR UPDATING TO CART!",
+              updatedCart: currentUser ? (currentUser as User).carts : [],
             };
           }
 
@@ -366,9 +372,20 @@ export const useUserStore = create(
             currentUser: normalizeUser(result.data),
           });
 
-          return { success: true, message: "Product updated to cart!" };
+          console.log("CURRENT USER: ", currentUser.carts);
+
+          return {
+            success: true,
+            message: "Cart Updated Successfully",
+            updatedCart: result.data.carts,
+          };
         } catch (error) {
           console.error("Error updating cart:", error);
+          return {
+            success: false,
+            message: "Failed to update cart due to a network error",
+            updatedCart: currentUser.carts, // Return the current cart as a fallback
+          };
         }
       },
     }),

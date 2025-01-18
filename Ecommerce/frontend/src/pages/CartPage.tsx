@@ -36,6 +36,7 @@ const CartPage = () => {
   }
   const [cartItems, setCartItems] = useState<any[]>([]); // Renamed from categoryProduct
   const [isFetching, setIsFetching] = useState<boolean>(true); // Renamed from isLoading
+  const [filteredCartItems, setFilteredCartItems] = useState(cartItems);
 
   useEffect(() => {
     if (currentUser) {
@@ -92,7 +93,7 @@ const CartPage = () => {
 
       // Remove the deleted product from local state
       setWishlistItems((prevItems) =>
-        prevItems.filter((item) => item._id !== product._id)
+        prevItems.filter((item: { _id: any }) => item._id !== product._id)
       );
 
       // Optionally show a success toast
@@ -116,33 +117,44 @@ const CartPage = () => {
     );
   };
 
-  const handleChange = (id: string) => {
-    console.log("TOGGLED", id); // Changed event to id for clarity
+  const handleChange = (id: string, quantity: number) => {
+    console.log("TOGGLED", id, "  QUANTITY: ", quantity); // Changed event to id for clarity
     setCartItems((prevItems) =>
       prevItems.map((product) => {
         if (product.product._id === id) {
-          setCheckItems((prevItems) => (prevItems ? [...prevItems, id] : [id]));
-          if (!product.toggled)
-            setSubtotal((prevSubTotal) =>
-              parseFloat((prevSubTotal + product.subTotal).toFixed(2))
-            );
-          else
-            setSubtotal((prevSubTotal) =>
-              parseFloat((prevSubTotal - product.subTotal).toFixed(2))
-            );
+          updateCheckItems(id);
+          updateSubtotal(product, quantity);
           return { ...product, toggled: !product.toggled };
         } else {
           return product;
         }
       })
     );
+
+    console.log("SUBTOTLA: ", subTotal);
+  };
+
+  const updateCheckItems = (id: string) => {
+    setCheckItems((prevItems) => (prevItems ? [...prevItems, id] : [id]));
+  };
+
+  const updateSubtotal = (product: any, quantity: number) => {
+    console.log("SUBTOTAL UPDATE: ", subTotal);
+    if (!product.toggled)
+      setSubtotal((prevSubTotal) =>
+        parseFloat((prevSubTotal + product.subTotal * quantity).toFixed(2))
+      );
+    else
+      setSubtotal((prevSubTotal) =>
+        parseFloat((prevSubTotal - product.subTotal * quantity).toFixed(2))
+      );
   };
 
   const options = ["Edit", "Delete"];
   const defaultOption = options[0];
 
   const toggleDelete = () => {
-    const { success, message } = deleteUserCart({ _id: checkItems });
+    deleteUserCart({ _id: checkItems });
 
     checkItems?.map((checkItem) => {
       setCartItems((prevItems) =>
@@ -153,21 +165,92 @@ const CartPage = () => {
     console.log("MESSAGE STRINGS: ", checkItems);
   };
 
-  const addQuantity = (productID: string) => {
-    const { success, message } = updateUserCart({
+  const addQuantity = async (productID: string) => {
+    const { success, message, updatedCart } = await updateUserCart({
       _id: productID,
       quantity: 1,
     });
-    console.log("UPDATE CART MESSAGE: ", message);
+
+    if (success) {
+      setCartItems((prevItems) =>
+        prevItems.map((item) => {
+          if (item.product._id === productID) {
+            updateSubtotal(item, item.quantity);
+            return { ...item, quantity: item.quantity + 1 }; // Corrected `quanty` to `quantity`
+          } else {
+            return item;
+          }
+        })
+      );
+    }
   };
 
-  const decreaseQuantity = (productID: string) => {
-    const { success, message } = updateUserCart({
+  const decreaseQuantity = async (productID: string) => {
+    const { success, message, updatedCart } = await updateUserCart({
       _id: productID,
       quantity: -1,
     });
-    console.log("UPDATE CART MESSAGE: ", message);
+    if (success) {
+      setCartItems((prevItems) =>
+        prevItems.map((item) => {
+          if (item.product._id === productID) {
+            return {
+              ...item,
+              quantity: Math.max(item.quantity - 1, 1),
+            }; // Corrected `quanty` to `quantity`
+          } else {
+            return item;
+          }
+        })
+      );
+    }
   };
+
+  // const addQuantity = async (productID: string) => {
+  //   const { success, updatedCart } = await updateUserCart({
+  //     _id: productID,
+  //     quantity: 1,
+  //   });
+
+  //   if (success) {
+  //     setCartItems((prevItems) =>
+  //       prevItems.map((item) => {
+  //         if (item.product._id === productID) {
+  //           return { ...item, quantity: item.quantity + 1 };
+  //         }
+  //         return item;
+  //       })
+  //     );
+  //     console.log("Quantity increased successfully!");
+  //   } else {
+  //     console.error("Failed to increase quantity.");
+  //   }
+  // };
+
+  // const decreaseQuantity = async (productID: string) => {
+  //   const { success, updatedCart } = await updateUserCart({
+  //     _id: productID,
+  //     quantity: -1,
+  //   });
+
+  //   if (success) {
+  //     setCartItems((prevItems) =>
+  //       prevItems.map((item) => {
+  //         if (item.product._id === productID) {
+  //           return {
+  //             ...item,
+  //             quantity: Math.max(item.quantity - 1, 1), // Prevent negative quantity
+  //           };
+  //         }
+  //         return item;
+  //       })
+  //     );
+  //     console.log("Quantity decreased successfully!");
+  //   } else {
+  //     console.error("Failed to decrease quantity.");
+  //   }
+  // };
+
   return (
     <div className="w-[90%] m-auto mt-4 max-w-[1200px] pb-52 ">
       <Toaster
@@ -215,7 +298,9 @@ const CartPage = () => {
                   >
                     <Checkbox
                       checked={item.toggled}
-                      onChange={() => handleChange(item.product._id)}
+                      onChange={() =>
+                        handleChange(item.product._id, item.quantity)
+                      }
                       inputProps={{ "aria-label": "controlled" }}
                       sx={{
                         color: "primary",
@@ -301,7 +386,7 @@ const CartPage = () => {
             </div>
           </div>
 
-          <div className="fixed md:relative h-24 w-[90%] bottom-0 bg-gray-100 md:h-80 md:pt-12 p-4 ">
+          <div className="fixed md:relative h-24 w-[90%] bottom-10 bg-gray-100 md:h-80 md:pt-12 p-4 ">
             <div className="hidden mb-12 md:flex md:items-center ">
               <h1 className="text-redAccent font-semibold text-md xs:text-xl">
                 Order Summary
@@ -324,18 +409,18 @@ const CartPage = () => {
                 />
                 <h1 className="ml-8">All</h1>
               </div>
-              <div className="mr-20 md:mr-0 md:hidden">
+              <div className="mr-1 md:mr-0 md:hidden">
                 <h1>Subtotal: ${subTotal.toLocaleString()}</h1>
               </div>
             </div>
-            <div className="mr-20 md:block  hidden mb-1">
+            <div className="mr-1 md:block  hidden mb-1">
               <h1>Subtotal: ${subTotal.toLocaleString()}</h1>
             </div>
 
             <div className="mb-1">
               <h1>Shipping: Free</h1>
             </div>
-            <div className="flex items-center w-[100%] ">
+            <div className="flex items-center w-[100%] md:mt-4">
               <button className="bg-redAccent h-12 w-[100%] rounded-md text-white px-3  bottom-0">
                 Check Out
               </button>
