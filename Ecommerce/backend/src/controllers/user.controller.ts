@@ -217,7 +217,10 @@ export const updateUserCartHandler = async (
     user.carts.forEach((item) => {
       if (item._id?.equals(cartItem._id)) {
         item.set({
-          quantity: item.quantity + cartItem.quantity,
+          quantity:
+            item.quantity + cartItem.quantity <= 0
+              ? 1
+              : item.quantity + cartItem.quantity,
           model: cartItem.model,
           subTotal: cartItem.subTotal,
           color: cartItem.color,
@@ -248,7 +251,9 @@ export const deleteUserCartHandler = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.carts.pull({ _id: productID._id });
+    productID._id.forEach((product: string) => {
+      user.carts.pull({ _id: product });
+    });
 
     await user.save();
     res.status(200).json({
