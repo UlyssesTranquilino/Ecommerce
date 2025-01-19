@@ -105,33 +105,56 @@ const CartPage = () => {
   };
 
   const [allChecked, setAllChecked] = useState(false);
-  const [subTotal, setSubtotal] = useState(0);
+  const [subTotal, setSubtotal] = useState<number>(0);
   const [checkItems, setCheckItems] = useState<string[]>();
 
   const handleAllCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAllChecked(!allChecked);
-    setCartItems((prevItems) =>
-      prevItems.map((product) => {
-        return { ...product, toggled: allChecked ? false : true };
-      })
-    );
+    setCartItems((prevItems) => {
+      const updatedCartItems = prevItems.map((product) => {
+        return { ...product, toggled: !allChecked ? true : false };
+      });
+
+      // Recalculate subtotal after updating cart items
+      recalculateSubtotal(updatedCartItems);
+      return updatedCartItems;
+    });
   };
 
-  const handleChange = (id: string, quantity: number) => {
-    console.log("TOGGLED", id, "  QUANTITY: ", quantity); // Changed event to id for clarity
-    setCartItems((prevItems) =>
-      prevItems.map((product) => {
-        if (product.product._id === id) {
-          updateCheckItems(id);
-          updateSubtotal(product, quantity);
-          return { ...product, toggled: !product.toggled };
-        } else {
-          return product;
-        }
-      })
-    );
+  const recalculateSubtotal = (updatedCartItems: any[]) => {
+    const newSubtotal = updatedCartItems
+      .filter((item) => item.toggled) // Only include toggled items
+      .reduce(
+        (acc, item) =>
+          acc +
+          item.quantity *
+            (item.product.price -
+              (item.product.price * (item.product.discount || 0)) / 100),
+        0
+      );
+    setSubtotal(parseFloat(newSubtotal.toFixed(2)));
+  };
 
-    console.log("SUBTOTLA: ", subTotal);
+  const handleChange = (id: string) => {
+    setCartItems((prevItems) => {
+      const updatedCartItems = prevItems.map((product) => {
+        if (product.product._id === id) {
+          if (product.toggled) {
+            setAllChecked(false);
+            setCheckItems(checkItems?.filter((item) => item != id));
+          } else {
+            setCheckItems((prev) => (prev ? [...prev, id] : [id]));
+            if (cartItems.length == 1) setAllChecked(true);
+          }
+          return { ...product, toggled: !product.toggled };
+        }
+        return product;
+      });
+
+      // Recalculate subtotal after updating cart items
+      recalculateSubtotal(updatedCartItems);
+      return updatedCartItems;
+    });
   };
 
   const updateCheckItems = (id: string) => {
@@ -142,11 +165,11 @@ const CartPage = () => {
     console.log("SUBTOTAL UPDATE: ", subTotal);
     if (!product.toggled)
       setSubtotal((prevSubTotal) =>
-        parseFloat((prevSubTotal + product.subTotal * quantity).toFixed(2))
+        parseFloat((prevSubTotal - product.subTotal * quantity).toFixed(2))
       );
     else
       setSubtotal((prevSubTotal) =>
-        parseFloat((prevSubTotal - product.subTotal * quantity).toFixed(2))
+        parseFloat((prevSubTotal + product.subTotal * quantity).toFixed(2))
       );
   };
 
@@ -154,55 +177,61 @@ const CartPage = () => {
   const defaultOption = options[0];
 
   const toggleDelete = () => {
+    console.log("CHECKED ITEMS: ", checkItems);
     deleteUserCart({ _id: checkItems });
 
-    checkItems?.map((checkItem) => {
-      setCartItems((prevItems) =>
-        prevItems.filter((item) => item.product._id != checkItem)
-      );
-    });
+    const updatedCartItems = cartItems.filter(
+      (item) => !checkItems?.includes(item.product._id)
+    );
+    setCartItems(updatedCartItems);
+    recalculateSubtotal(updatedCartItems);
 
     console.log("MESSAGE STRINGS: ", checkItems);
   };
 
+  // Handle quantity increase
   const addQuantity = async (productID: string) => {
-    const { success, message, updatedCart } = await updateUserCart({
+    const { success } = await updateUserCart({
       _id: productID,
       quantity: 1,
     });
 
     if (success) {
-      setCartItems((prevItems) =>
-        prevItems.map((item) => {
+      setCartItems((prevItems) => {
+        const updatedCartItems = prevItems.map((item) => {
           if (item.product._id === productID) {
-            updateSubtotal(item, item.quantity);
-            return { ...item, quantity: item.quantity + 1 }; // Corrected `quanty` to `quantity`
-          } else {
-            return item;
+            return { ...item, quantity: item.quantity + 1 };
           }
-        })
-      );
+          return item;
+        });
+
+        // Recalculate subtotal after updating quantities
+        recalculateSubtotal(updatedCartItems);
+        return updatedCartItems;
+      });
     }
   };
 
+  // Handle quantity decrease
   const decreaseQuantity = async (productID: string) => {
-    const { success, message, updatedCart } = await updateUserCart({
+    const { success } = await updateUserCart({
       _id: productID,
       quantity: -1,
     });
+
     if (success) {
-      setCartItems((prevItems) =>
-        prevItems.map((item) => {
+      setCartItems((prevItems) => {
+        const updatedCartItems = prevItems.map((item) => {
           if (item.product._id === productID) {
-            return {
-              ...item,
-              quantity: Math.max(item.quantity - 1, 1),
-            }; // Corrected `quanty` to `quantity`
-          } else {
-            return item;
+            return { ...item, quantity: Math.max(item.quantity - 1, 1) }; // Prevent negative quantity
           }
-        })
-      );
+          return item;
+        });
+
+        // Recalculate subtotal after updating quantities
+        recalculateSubtotal(updatedCartItems);
+        return updatedCartItems;
+      });
     }
   };
 
