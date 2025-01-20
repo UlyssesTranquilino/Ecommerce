@@ -9,14 +9,15 @@ import { RiTruckLine } from "react-icons/ri";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
+import { useUserStore } from "../../store/product";
 import { Product } from "../Intefaces/Product";
 const AccountPage = () => {
-  const { user, fetchSingleProduct } = useProductStore();
+  const { currentUser } = useUserStore();
+  const { fetchSingleProduct } = useProductStore();
   const [showWishlists, setShowWishlists] = useState(false);
 
   const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
 
-  console.log("USER: ", user);
   // useEffect(() => {
   //   if (user.data?._id) {
   //     const fetchWishlistItems = async () => {
@@ -58,12 +59,12 @@ const AccountPage = () => {
               <PersonIcon fontSize="large" className="text-white scale-150" />
             </div>
 
-            <div className="cursor-pointer w-9 h-9 bg-[rgba(0,0,0,0.25)] absolute rounded-full z-10 right-2 bottom-1 flex justify-center items-center">
-              <EditIcon className="text-white scale-110" />
+            <div className="cursor-pointer w-8 h-8 bg-[rgba(0,0,0,0.25)] absolute rounded-full z-10 right-2 bottom-1 flex justify-center items-center">
+              <EditIcon className="text-white scale-100" />
             </div>
           </div>
-          <div className="text-white text-2xl font-semibold ml-3 ">
-            {user?.data?.name}
+          <div className="text-white text-2xl font-semibold ml-4 mt-5">
+            {currentUser?.name}
           </div>
         </div>
         <div className="absolute right-0 p-3">

@@ -17,6 +17,7 @@ const Navbar = () => {
   const location = useLocation(); // Get the current location
   const isWishlistActive = location.pathname === "/wishlist"; // Check if the path is /wishlist
   const isCartActive = location.pathname === "/cart";
+  const isAccountAcitve = location.pathname === "/account";
 
   const { currentUser } = useUserStore();
 
@@ -37,11 +38,12 @@ const Navbar = () => {
       </div>
 
       <div className="flex items-center">
-        {showSignin && (
+        {!currentUser && (
           <Link to="/signin">
             <button className="mr-3">Sign In</button>
           </Link>
         )}
+
         <Link to={"/wishlist"}>
           <div className=" relative">
             {!isWishlistActive && (currentUser?.wishlists?.length ?? 0) > 0 && (
@@ -88,13 +90,17 @@ const Navbar = () => {
           <DarkModeOutlinedIcon />
         </button> */}
 
-        {!showSignin && (
-          <Link to="/account">
+        <Link to="/account">
+          {isAccountAcitve ? (
+            <button className="mr-3  rounded-full ">
+              <AccountCircleIcon className="text-redAccent bg-white rounded-full " />
+            </button>
+          ) : (
             <button className="mr-3">
               <AccountCircleIcon />
             </button>
-          </Link>
-        )}
+          )}
+        </Link>
       </div>
     </nav>
   );
