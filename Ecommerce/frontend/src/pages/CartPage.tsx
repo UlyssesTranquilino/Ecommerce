@@ -415,7 +415,7 @@ const CartPage = () => {
             </div>
           </div>
 
-          <div className="fixed md:relative h-24 w-[90%] bottom-10 bg-gray-100 md:h-80 md:pt-12 p-4 ">
+          <div className="fixed md:relative h-24 w-[90%] bottom-10 bg-gray-100 md:h-80 md:top-6 md:pt-10 p-4 ">
             <div className="hidden mb-12 md:flex md:items-center ">
               <h1 className="text-redAccent font-semibold text-md xs:text-xl">
                 Order Summary
