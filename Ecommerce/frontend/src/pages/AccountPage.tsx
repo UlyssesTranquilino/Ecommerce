@@ -8,47 +8,18 @@ import InboxIcon from "@mui/icons-material/Inbox";
 import { RiTruckLine } from "react-icons/ri";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
+import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import SupportAgentOutlinedIcon from "@mui/icons-material/SupportAgentOutlined";
 import { useUserStore } from "../../store/product";
-import { Product } from "../Intefaces/Product";
+
 const AccountPage = () => {
   const { currentUser } = useUserStore();
   const { fetchSingleProduct } = useProductStore();
-  const [showWishlists, setShowWishlists] = useState(false);
 
-  const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
-
-  // useEffect(() => {
-  //   if (user.data?._id) {
-  //     const fetchWishlistItems = async () => {
-  //       try {
-  //         const fetchedItems = await Promise.all(
-  //           user.data.wishlists.map(async (item) => {
-  //             try {
-  //               console.log("ITEM ITEM: ", item);
-  //               const data = await fetchSingleProduct(item);
-  //               return data.data; // Return product data
-  //             } catch (error) {
-  //               console.error(`Error fetching product with ID ${item}:`, error);
-  //               return null; // Return null for missing products
-  //             }
-  //           })
-  //         );
-  //         console.log("Fetched Items: ", fetchedItems);
-
-  //         // Filter out any null values in case some products were not found
-  //         setWishlistItems(fetchedItems.filter((item) => item !== null));
-
-  //         setShowWishlists(true);
-  //       } catch (error) {
-  //         console.error("Error fetching wishlist items:", error);
-  //         setShowWishlists(true);
-  //       }
-  //     };
-
-  //     fetchWishlistItems();
-  //   }
-  // }, []);
+  const [wishlistItems, setWishlistItems] = useState<any[]>([]);
 
   return (
     <div>
@@ -94,19 +65,56 @@ const AccountPage = () => {
         </div>
       </div>
 
-      <div className="bg-gray-200 h-3 my-12"></div>
+      <div className="bg-gray-200 h-3 mt-12"></div>
 
-      <div className="w-[90%] m-auto mt-10">
-        <div className="flex justify-between items-center">
-          <h1 className="font-semibold text-xl">My Wishlists</h1>
-          <button>
-            <p className="text-gray-500 ">
-              View More{" "}
-              <ArrowForwardIosIcon fontSize="small" className="scale-75" />
-            </p>
-          </button>
+      <div className="w-[90%] m-auto mt-10 ">
+        <h1 className="font-semibold text-lg">More Activities</h1>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center justify-between mt-5 border-2 border-gray-300 p-3 rounded-sm">
+            <div className="flex items-center">
+              <ChatOutlinedIcon />
+              <p className="ml-2 text-sm"> My Reviews</p>
+            </div>
+            <ArrowForwardIosIcon className="text-gray-500 scale-50" />
+          </div>
+          <div className="flex items-center justify-between mt-5 border-2 border-gray-300 p-3 rounded-sm">
+            <div className="flex items-center">
+              <ShoppingBagOutlinedIcon />
+              <p className="ml-2 text-sm">Buy Again</p>
+            </div>
+
+            <ArrowForwardIosIcon className="text-gray-500 scale-50" />
+          </div>
+          <div className="flex items-center justify-between border-2 border-gray-300 p-3 rounded-sm">
+            <div className="flex items-center">
+              <AccessTimeOutlinedIcon />
+              <p className="ml-2 text-sm"> Recently Viewed</p>
+            </div>
+
+            <ArrowForwardIosIcon className="text-gray-500 scale-50" />
+          </div>
         </div>
-        {showWishlists && <div>Wishlists {wishlistItems}</div>}
+      </div>
+
+      <div className="bg-gray-200 h-3 mt-12"></div>
+      <div className="w-[90%] m-auto mt-10">
+        <h1 className="font-semibold text-lg mb-4">Support</h1>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <HelpOutlineOutlinedIcon />
+              <p className="ml-2 text-sm">Help Centre</p>
+            </div>
+            <ArrowForwardIosIcon className="text-gray-500 scale-50" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <SupportAgentOutlinedIcon />
+              <p className="ml-2 text-sm">Chat with Express</p>
+            </div>
+            <ArrowForwardIosIcon className="text-gray-500 scale-50" />
+          </div>
+        </div>
       </div>
     </div>
   );

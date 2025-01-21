@@ -24,11 +24,11 @@ const Navbar = () => {
   console.log("NAV BAR CURRENT USER: ", currentUser);
 
   return (
-    <nav className="bg-black text-white h-12 flex items-center justify-between">
+    <nav className="bg-black text-white h-12 flex items-center justify-between pl-5">
       <div className="flex items-center">
-        <button className="text-textPrimary mr-4 ml-4 flex items-center">
+        {/* <button className="text-textPrimary mr-4 ml-4 flex items-center">
           <MenuIcon />
-        </button>
+        </button> */}
 
         <Link to="/">
           <button>
@@ -90,17 +90,19 @@ const Navbar = () => {
           <DarkModeOutlinedIcon />
         </button> */}
 
-        <Link to="/account">
-          {isAccountAcitve ? (
-            <button className="mr-3  rounded-full ">
-              <AccountCircleIcon className="text-redAccent bg-white rounded-full " />
-            </button>
-          ) : (
-            <button className="mr-3">
-              <AccountCircleIcon />
-            </button>
-          )}
-        </Link>
+        {currentUser && (
+          <Link to="/account">
+            {isAccountAcitve ? (
+              <button className="mr-3  rounded-full ">
+                <AccountCircleIcon className="text-redAccent bg-white rounded-full " />
+              </button>
+            ) : (
+              <button className="mr-3">
+                <AccountCircleIcon />
+              </button>
+            )}
+          </Link>
+        )}
       </div>
     </nav>
   );
