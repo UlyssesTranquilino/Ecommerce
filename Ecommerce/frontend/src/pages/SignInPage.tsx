@@ -101,7 +101,7 @@ const SignInPage = () => {
             Log In
           </button>
         </form>
-        <div className="mt-7 flex items-center justify-between">
+        <div className="mt-8 flex items-center justify-between">
           <p className="text-gray-600">Don't have an account?</p>
           <Link to="/signup">
             <h1 className="underline">Sign up</h1>
