@@ -45,9 +45,12 @@ const AccountPage = () => {
                 {currentUser?.name}
               </div>
             </div>
-            <div className="absolute right-0 p-3 cursor-pointer">
-              <SettingsIcon className="text-white scale-110" />
-            </div>
+            <Link to="/account/settings">
+              <div className="absolute right-0 p-3 cursor-pointer">
+                <SettingsIcon className="text-white scale-110" />
+                {/* <EditIcon className="text-white scale-100" /> */}
+              </div>
+            </Link>
           </div>
         </div>
         <div className="max-w-[1200px] m-auto">

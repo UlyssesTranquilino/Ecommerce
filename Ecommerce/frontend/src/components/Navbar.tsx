@@ -17,7 +17,9 @@ const Navbar = () => {
   const location = useLocation(); // Get the current location
   const isWishlistActive = location.pathname === "/wishlist"; // Check if the path is /wishlist
   const isCartActive = location.pathname === "/cart";
-  const isAccountAcitve = location.pathname === "/account";
+  const isAccountAcitve =
+    location.pathname === "/account" ||
+    location.pathname === "/account/settings";
 
   const { currentUser } = useUserStore();
 
