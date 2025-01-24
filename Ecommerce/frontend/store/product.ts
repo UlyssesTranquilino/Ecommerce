@@ -151,6 +151,35 @@ export const useUserStore = create(
     (set: any, get: () => { currentUser: User | null }) => ({
       currentUser: null,
       setCurrentUser: (user: any) => set({ currentUser: user }),
+      updateUser: async (user: any) => {
+        try {
+          const res = await fetch(`http://localhost:5000/user/${user._id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+          });
+
+          if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error.message || "Failed to update user");
+          }
+
+          const data = await res.json();
+          console.log("DATA: ", data);
+
+          // set({ currentUser: data.data });
+
+          return { success: data.success, message: data.message };
+        } catch (error) {
+          console.error("Error updating user:", error);
+          return {
+            success: false,
+            message: (error as Error).message || "An unexpected error occurred",
+          };
+        }
+      },
       addUserWishlist: async (product: any) => {
         let currentUser: User | null = get()?.currentUser;
         currentUser = normalizeUser(currentUser);

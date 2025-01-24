@@ -16,13 +16,36 @@ export const getUserDetailsHandler = async (req: Request, res: Response) => {
 
 export const updateUserDetailsHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const user = req.body;
+  const { name, email, password, newPassword } = req.body;
 
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, user, {
-      new: true,
-    });
-    res.status(200).json({ success: true, data: updatedUser });
+    const user = await User.findOne({ email }).select("+password");
+
+    console.log("USER: ", user);
+
+    if (user) {
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      console.log("IS MATCH: ", isMatch);
+      if (isMatch) {
+        res.status(200).json({ success: true, message: "Passowrd match" });
+      } else
+        res
+          .status(200)
+          .json({ success: false, message: "Current password does not match" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+    // const { password, ...rest } = user;
+
+    // const saltRounds = 10;
+    // const salt = await bcrypt.genSalt(saltRounds);
+
+    // const hashedPassword = await bcrypt.hash(password, salt);
+
+    // const updatedUser = await User.findByIdAndUpdate(id, user, {
+    //   new: true,
+    // });
   } catch (error) {
     console.error("ERROR: ", error);
     res.status(404).json({ success: false, message: "User not found" });
