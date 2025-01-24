@@ -11,6 +11,7 @@ import SignUpPage from "./pages/SignUpPage";
 import SignInPage from "./pages/SignInPage";
 import AccountPage from "./pages/AccountPage";
 import CartPage from "./pages/CartPage";
+import SettingsPage from "./pages/SettingsPage";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/account/settings" element={<SettingsPage />} />
       </Routes>
     </div>
   );
