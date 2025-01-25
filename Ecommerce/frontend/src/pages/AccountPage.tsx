@@ -37,9 +37,9 @@ const AccountPage = () => {
                   />
                 </div>
 
-                <div className="cursor-pointer w-8 h-8 bg-[rgba(0,0,0,0.25)] absolute rounded-full z-10 right-2 bottom-1 flex justify-center items-center">
+                {/* <div className="cursor-pointer w-8 h-8 bg-[rgba(0,0,0,0.25)] absolute rounded-full z-10 right-2 bottom-1 flex justify-center items-center">
                   <EditIcon className="text-white scale-100" />
-                </div>
+                </div> */}
               </div>
               <div className="text-white text-2xl font-semibold ml-4 mt-5">
                 {currentUser?.name}
