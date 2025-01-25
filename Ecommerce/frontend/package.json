@@ -18,6 +18,8 @@
     "@mui/icons-material": "^6.1.10",
     "@mui/material": "^6.1.10",
     "axios": "^1.7.9",
+    "didyoumean2": "^7.0.4",
+    "fuse.js": "^7.0.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
@@ -31,6 +33,7 @@
     "react-slick": "^0.30.2",
     "react-swipeable-list": "^1.10.0",
     "slick-carousel": "^1.8.1",
+    "string-similarity-js": "^2.1.4",
     "swiper": "^11.1.15",
     "zustand": "^5.0.2",
     "zustand-persist": "^0.4.0"
