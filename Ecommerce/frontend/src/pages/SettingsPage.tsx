@@ -7,12 +7,13 @@ import { RiTruckLine } from "react-icons/ri";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 
 import { useUserStore } from "../../store/product";
-import { Link, useLocation } from "react-router-dom"; // Import useLocation
+import { Link, useLocation, useNavigate } from "react-router-dom"; // Import useLocation
 
 const SettingsPage = () => {
-  const { currentUser } = useUserStore();
+  const location = useLocation(); // Access the current location if needed
+  const navigate = useNavigate(); // Use navigate instead of router.push
   const { fetchSingleProduct } = useProductStore();
-  const { updateUser } = useUserStore();
+  const { currentUser, updateUser } = useUserStore();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -45,11 +46,13 @@ const SettingsPage = () => {
       return;
     }
 
-    if (newPassword.length < 7) {
+    if (newPassword.length < 7 || newPassword.length < 7) {
       setIsSuccess(false);
       setMessage("Password must be at least 8 characters long.");
       return;
     }
+
+    //stroe new password and other details update
 
     const { success, message } = await updateUser({
       name: name,
@@ -63,6 +66,9 @@ const SettingsPage = () => {
     if (!success) {
       setIsSuccess(false);
       setMessage(message);
+    } else {
+      alert("User updated!");
+      navigate("/account");
     }
   };
 

@@ -12,6 +12,7 @@ import SignInPage from "./pages/SignInPage";
 import AccountPage from "./pages/AccountPage";
 import CartPage from "./pages/CartPage";
 import SettingsPage from "./pages/SettingsPage";
+import Search from "./pages/SearchPage";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/account" element={<AccountPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/account/settings" element={<SettingsPage />} />
+        <Route path="/search/:searchItem" element={<Search />} />
       </Routes>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import { TextField } from "@mui/material";
 import AdSlider from "../components/AdSlider";
@@ -9,11 +9,20 @@ import Categories from "../components/Categories";
 import AllProducts from "../components/AllProducts";
 
 //vid: https://www.youtube.com/watch?v=Ejg7es3ba2k
-
+//LINK
+import { Link, useNavigate } from "react-router-dom";
 import { useUserStore } from "../../store/product";
 const HomePage = () => {
+  const navigate = useNavigate();
   const { currentUser } = useUserStore();
-  console.log("HOME PAGE: ", currentUser);
+  const [searchItem, setSearchItem] = useState<string>("");
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchItem.trim()) {
+      navigate(`/search/${searchItem}`);
+    }
+  };
+
   return (
     <div className="mt-10 flex-col justify-center align-items-center max-w-[1200px] m-auto ">
       <div
@@ -24,11 +33,15 @@ const HomePage = () => {
           type="text"
           id="search"
           placeholder="What are you looking for?"
-          className="bg-blue-gray-50 h-9 w-4/5 focus:outline-none rounded-l-lg ml-5"
+          onChange={(e) => setSearchItem(e.target.value)}
+          onKeyDown={handleKeyDown} // Handle Enter key press
+          className="bg-blue-gray-50 h-9 w-4/5 focus:outline-none rounded-l-lg ml-5 mt-[3px]"
         ></input>
-        <button className="bg-redAccent text-textPrimary w-16 h-10 rounded-tr-md rounded-br-md ">
-          <SearchIcon style={{ color: "white" }} />
-        </button>
+        <Link to={`/search/${searchItem}`}>
+          <button className="bg-redAccent text-textPrimary w-12 sm:w-16 h-10 rounded-tr-md rounded-br-md ">
+            <SearchIcon style={{ color: "white" }} />
+          </button>
+        </Link>
       </div>
 
       <div
