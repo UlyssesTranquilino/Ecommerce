@@ -23,15 +23,29 @@ import { useProductStore } from "../../store/product";
 
 //MUI
 import { CircularProgress } from "@mui/material";
+import Rating from "@mui/material/Rating";
 
 //COMPONENTS
 import ProductCard from "../components/ProductCard";
+
+//SPELL CHECKER
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
 
 const Search = () => {
   const navigate = useNavigate();
   const { searchItem } = useParams();
   const [searchProduct, setSearchProduct] = useState<string>(searchItem || "");
   const [isFetching, setIsFetching] = useState<boolean>(true);
+  const [suggestion, setSuggestion] = useState<string>("");
 
   const handleBackClick = () => {
     navigate(-1); // Go back in history
@@ -49,21 +63,23 @@ const Search = () => {
       setIsFetching(false);
     };
     fetchData();
-  }, [fetchProducts]);
+  }, [fetchProducts, searchItem]); // Add `searchItem` to dependencies
 
   const [productsToShow, setProductsToShow] = useState<Product[]>(products);
 
   useEffect(() => {
-    setProductsToShow(
-      products.filter(
-        (product) =>
-          product.title.toLowerCase().includes(searchProduct.toLowerCase()) ||
-          product.brand.toLowerCase().includes(searchProduct.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchProduct.toLowerCase())
-      )
-    );
-    console.log("PRODUCTS TO SHOW: ", productsToShow);
-  }, [products]);
+    if (searchItem) {
+      setSearchProduct(searchItem); // Update the searchProduct state with the URL param
+      setProductsToShow(
+        products.filter(
+          (product) =>
+            product.title.toLowerCase().includes(searchItem.toLowerCase()) ||
+            product.brand.toLowerCase().includes(searchItem.toLowerCase()) ||
+            product.category.toLowerCase().includes(searchItem.toLowerCase())
+        )
+      );
+    }
+  }, [searchItem, products]);
 
   //Sort By Price
   const [sortBy, setSortBy] = useState("");
@@ -113,6 +129,66 @@ const Search = () => {
       handleSearch();
     }
   };
+
+  //Drawer Mobile
+  const [open, setOpen] = useState(true);
+  const toggleFilter = (newOpen: boolean) => () => {
+    setOpen(newOpen);
+  };
+
+  const DrawerList = (
+    <Box sx={{ width: 250 }} role="presentation">
+      <div className="p-4">
+        <h1 className="font-semibold mb-3">Search Filter</h1>
+        <h1 className="text-md">Rating</h1>
+        <div className="m-2 mb-5 flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <Rating name="read-only" value={5} readOnly />
+          </div>
+          <div className="flex items-center gap-2">
+            <Rating name="read-only" value={4} readOnly />
+            <p className="text-sm">& Up</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Rating name="read-only" value={3} readOnly />
+            <p className="text-sm">& Up</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Rating name="read-only" value={2} readOnly />
+            <p className="text-sm">& Up</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Rating name="read-only" value={1} readOnly />
+            <p className="text-sm">& Up</p>
+          </div>
+        </div>
+
+        <Divider />
+        <div className="mt-4 ">
+          <h1 className="text-md">Price Range</h1>
+          <div className="flex items-center gap-3 mt-2">
+            <input
+              type="number"
+              placeholder="$MIN"
+              className="w-1/2 p-1 mt-2 border-[1px] border-gray-400 text-sm"
+              style={{ outline: "none" }}
+            />
+            <div className="w-20 h-[1px] bg-gray-400" />
+            <input
+              type="number"
+              placeholder="$MIN"
+              className="w-1/2 p-1 mt-2 border-[1px] border-gray-400 text-sm"
+              style={{ outline: "none" }}
+            />
+          </div>
+          <button className="mt-5 text-white bg-[#DB4444] w-full h-8 text-sm">
+            APPLY
+          </button>
+        </div>
+      </div>
+    </Box>
+  );
+
   return (
     <div className="mt-10 flex-col justify-center align-items-center max-w-[1200px] w-[90%] m-auto ">
       <div className="flex items-center gap-3">
@@ -145,11 +221,15 @@ const Search = () => {
           </button>
         </div>
 
-        <div className="relative ">
+        <div onClick={toggleFilter(true)}>
           <FilterAltOutlinedIcon />
           <p className="text-xs">Filter</p>
         </div>
       </div>
+
+      <Drawer open={open} onClose={toggleFilter(false)} anchor="right">
+        {DrawerList}
+      </Drawer>
 
       {isFetching ? (
         <div className="flex justify-center mt-24">
