@@ -25,6 +25,7 @@ const allowedOrigins = [
   "http://192.168.1.5:5173",
   "http://192.168.1.6:5173",
   "http://192.168.1.7:5173",
+    "https://clever-figolla-513dc1.netlify.app",
 ];
 
 // Configure CORS middleware
