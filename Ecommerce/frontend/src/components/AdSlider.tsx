@@ -1,4 +1,3 @@
-import React from "react";
 import { useMediaQuery } from "react-responsive";
 import Slider from "react-slick";
 
@@ -17,13 +16,13 @@ import Sale from "./../../src/assets/BannerSlider/Sale.png";
 import Shipping from "./../../src/assets/BannerSlider/Shipping.png";
 
 //LINK
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import "../CSS/AdSlider.css";
 const AdSlider = () => {
   const navigate = useNavigate();
 
-  var settings = {
+  const settings = {
     dots: true,
     infinite: true,
     speed: 500,

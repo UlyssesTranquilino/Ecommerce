@@ -1,8 +1,6 @@
-import React from "react";
 import adPS5 from "../../src/assets/PS5.png";
 
 import adSpeaker from "../../src/assets/Speaker.png";
-import adPerfume from "../../src/assets/adPerfume.png";
 import AsusTUF from "../../src/assets/ASUS_TUF.png";
 import Appliences from "../../src/assets/Appliences.png";
 
@@ -143,10 +141,3 @@ const NewArrival = () => {
 };
 
 export default NewArrival;
-
-{
-  /* <div className="flex-col  h-80" style={{ border: "2px solid red" }}>
-<h1 className="font-bold">PlayStation 5</h1>
-<p>Black and White version of the PS5 coming out on sale.</p>
-</div> */
-}

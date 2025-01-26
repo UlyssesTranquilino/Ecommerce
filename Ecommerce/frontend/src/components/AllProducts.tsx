@@ -9,9 +9,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 //RATING MUI ICONS
 import Rating from "@mui/material/Rating";
 
-//HEART ICONS
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-
 //LINK
 import { Link } from "react-router-dom";
 
@@ -39,7 +36,7 @@ const AllProducts = () => {
     fetchProducts();
   }, [fetchProducts]);
   useEffect(() => {
-    setProductsToShow(products.filter((product, index) => index < 16));
+    setProductsToShow(products.filter((_product, index) => index < 16));
   }, [products]);
 
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);

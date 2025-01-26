@@ -14,7 +14,7 @@ const SignInPage = () => {
   const [message, setMessage] = useState<string>("");
   const navigate = useNavigate();
 
-  const { setCurrentUser } = useUserStore();
+  const { setCurrentUser }: any = useUserStore();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -108,7 +108,7 @@ const SignInPage = () => {
           </Link>
         </div>
       </div>
-      <div className="w-[60%] md:flex items-center justify-center bg-[#CBE4E8] hidden md:block p-3">
+      <div className="w-[60%] md:flex items-center justify-center bg-[#CBE4E8] hidden  p-3">
         <img src={cartSignin} alt="Ecommerce cart" className="w-[350px]" />
       </div>
     </div>

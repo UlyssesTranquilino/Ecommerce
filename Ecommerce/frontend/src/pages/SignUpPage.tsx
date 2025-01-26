@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import { useProductStore } from "../../store/product";
 
@@ -104,7 +103,7 @@ const SignUpPage = () => {
         </div>
       </div>
 
-      <div className="w-[60%] md:flex items-center justify-center bg-[#CBE4E8] hidden md:block p-3">
+      <div className="w-[60%] md:flex items-center justify-center bg-[#CBE4E8] hidden  p-3">
         <img src={cartSignin} alt="Ecommerce cart" className="w-[350px]" />
       </div>
     </div>

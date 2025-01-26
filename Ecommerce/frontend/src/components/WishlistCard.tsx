@@ -1,11 +1,7 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import { Link, useNavigate } from "react-router-dom";
-//TOASTER
-import toast, { Toaster } from "react-hot-toast";
-import { useProductStore, useUserStore } from "../../store/product";
+import { Link } from "react-router-dom";
 
 interface ProductProps {
   _id: string;
@@ -28,8 +24,6 @@ const WishlistCard: React.FC<ProductProps> = ({
   onDelete,
   onAddCart,
 }) => {
-  const discountedPrice = (price - price * (discount / 100)).toFixed(2);
-
   return (
     <div
       className="rounded-lg bg-white flex-col relative border-redAccent hover:shadow-md cursor-pointer hover:translate-y-[-4px] transition-transform duration-200 ease-in-out"
@@ -62,10 +56,7 @@ const WishlistCard: React.FC<ProductProps> = ({
             {discount ? (
               <>
                 <p className="font-medium text-redAccent mr-2">
-                  ${" "}
-                  {(price - price * ((discount ? discount : 0) / 100)).toFixed(
-                    2
-                  )}
+                  $ {(price - price * (discount / 100)).toFixed(2)}
                 </p>
                 <p className="font-medium text-gray-500 line-through">
                   ${price.toFixed(2)}

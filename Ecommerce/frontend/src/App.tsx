@@ -1,6 +1,3 @@
-import { useState, useEffect } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Footer from "./pages/Footer";
@@ -22,8 +19,6 @@ import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <div className="light bg-bgPrimary">
       <Navbar />

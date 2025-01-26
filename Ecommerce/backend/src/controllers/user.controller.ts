@@ -16,39 +16,44 @@ export const getUserDetailsHandler = async (req: Request, res: Response) => {
 
 export const updateUserDetailsHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
+  console.log("PARAMS: ", req.params);
   const { name, email, password, newPassword } = req.body;
 
   try {
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findById(id).select("+password");
 
     console.log("USER: ", user);
 
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
 
-      console.log("IS MATCH: ", isMatch);
       if (isMatch) {
-        res.status(200).json({ success: true, message: "Passowrd match" });
-      } else
+        // Hash the new password
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update user fields
+        user.password = hashedPassword;
+        user.name = name || user.name;
+        user.email = email || user.email;
+
+        await user.save(); // Save updated user directly
+
         res
           .status(200)
+          .json({ success: true, message: "User updated!", data: user });
+      } else {
+        res
+          .status(400)
           .json({ success: false, message: "Current password does not match" });
+      }
     } else {
-      res.status(404).json({ message: "User not found" });
+      res.status(404).json({ success: false, message: "User not found" });
     }
-    // const { password, ...rest } = user;
-
-    // const saltRounds = 10;
-    // const salt = await bcrypt.genSalt(saltRounds);
-
-    // const hashedPassword = await bcrypt.hash(password, salt);
-
-    // const updatedUser = await User.findByIdAndUpdate(id, user, {
-    //   new: true,
-    // });
   } catch (error) {
     console.error("ERROR: ", error);
-    res.status(404).json({ success: false, message: "User not found" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -199,7 +204,7 @@ export const addUserCartHandler = async (
     );
 
     if (existingItem) {
-      // If the item exists, update its quantity, model, and color
+      // If the item exists, update its quantity, model, stock, and color
       const quantity = existingItem.quantity + productAdded.quantity;
       console.log("Quantity: ", quantity);
       existingItem.quantity += productAdded.quantity;

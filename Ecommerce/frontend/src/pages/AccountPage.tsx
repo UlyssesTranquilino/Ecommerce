@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
-import { useProductStore } from "../../store/product";
 import PersonIcon from "@mui/icons-material/Person";
-import EditIcon from "@mui/icons-material/Edit";
+
 import SettingsIcon from "@mui/icons-material/Settings";
 import PaymentIcon from "@mui/icons-material/Payment";
 import InboxIcon from "@mui/icons-material/Inbox";
@@ -14,14 +12,11 @@ import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import SupportAgentOutlinedIcon from "@mui/icons-material/SupportAgentOutlined";
 import { useUserStore } from "../../store/product";
-import { Link, useLocation } from "react-router-dom"; // Import useLocation
+import { Link } from "react-router-dom"; // Import useLocation
 
 const AccountPage = () => {
   const { currentUser } = useUserStore();
-  const { fetchSingleProduct } = useProductStore();
-  const { setCurrentUser } = useUserStore();
-
-  const [wishlistItems, setWishlistItems] = useState<any[]>([]);
+  const { setCurrentUser }: any = useUserStore();
 
   return (
     <div>

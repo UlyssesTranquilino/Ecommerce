@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 
 //INTERFACES
@@ -10,7 +10,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const CategoryPage = () => {
   const { category } = useParams(); // Use useParams to get the category from the URL
@@ -84,12 +83,6 @@ const CategoryPage = () => {
     setCategoryProduct(sortedProducts);
   };
 
-  const navigate = useNavigate();
-
-  const handleBackClick = () => {
-    navigate(-1);
-  };
-
   return (
     <div className="w-[90%] m-auto mt-4  max-w-[1200px] ">
       <div className="flex items-center">
@@ -100,13 +93,13 @@ const CategoryPage = () => {
         </Link>
         <h1 className="mx-2">/</h1>
         <h1 className="text-redAccent underline cursor-pointer">
-          {capitalizeFirstLetter(category || "")}
+          {capitalizeFirstLetter(category ?? "")}
         </h1>
       </div>
       <div className="flex items-center mt-6">
         <div className="w-4 h-10 bg-redAccent rounded-md"></div>
         <h1 className="text-redAccent font-semibold text-xl ml-3">
-          {capitalizeFirstLetter(category || "")}
+          {capitalizeFirstLetter(category ?? "")}
         </h1>
       </div>
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch src --exec ts-node ./src/server.ts",
+    "start": "ts-node ./src/server.ts",
     "build": "tsc"
   },
   "keywords": [],
@@ -16,7 +16,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.1",
     "@types/validator": "^13.12.2",
-    "nodemon": "^3.1.7",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   },

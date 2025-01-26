@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import WishlistCard from "../components/WishlistCard";
 import EmptyCartImage from "../assets/Images/Empty Cart.png";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { Product } from "../interfaces/Product";
 //TOASTER
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useProductStore, useUserStore } from "../../store/product";
 
 import { Checkbox } from "@mui/material";
@@ -17,26 +15,11 @@ import "react-dropdown/style.css";
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const {
-    currentUser,
-    deleteUserWishlist,
-    addUserCart,
-    deleteUserCart,
-    updateUserCart,
-  } = useUserStore();
+  const { currentUser, deleteUserCart, updateUserCart }: any = useUserStore();
   const { fetchSingleProduct } = useProductStore();
 
-  interface Cart {
-    product: Product;
-    quantity: number;
-    subTotal: number;
-    model: string | null;
-    color: string | null;
-    toggled: boolean;
-  }
   const [cartItems, setCartItems] = useState<any[]>([]); // Renamed from categoryProduct
   const [isFetching, setIsFetching] = useState<boolean>(true); // Renamed from isLoading
-  const [filteredCartItems, setFilteredCartItems] = useState(cartItems);
 
   useEffect(() => {
     if (currentUser) {
@@ -85,34 +68,17 @@ const CartPage = () => {
     console.log("CART ITEMS UPDATED: ", cartItems);
   }, [cartItems]);
 
-  const deleteWishlist = async (product: any) => {
-    const { success, message } = await deleteUserWishlist(product);
-
-    if (success) {
-      console.log("PRODUCT REMOVED FROM WISHLIST");
-
-      // Remove the deleted product from local state
-      setWishlistItems((prevItems) =>
-        prevItems.filter((item: { _id: any }) => item._id !== product._id)
-      );
-
-      // Optionally show a success toast
-      toast.success("Product removed from wishlist!");
-    } else {
-      console.error(message);
-      toast.error(message || "Failed to remove product from wishlist");
-    }
-  };
-
   const [allChecked, setAllChecked] = useState(false);
-  const [subTotal, setSubtotal] = useState<number>(0);
+  const [subTotal, setSubTotal] = useState<number>(0);
   const [checkItems, setCheckItems] = useState<string[]>();
 
-  const handleAllCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAllChecked(!allChecked);
+  const handleAllCheckChange = () => {
+    const newAllChecked = !allChecked;
+    setAllChecked(newAllChecked);
+
     setCartItems((prevItems) => {
       const updatedCartItems = prevItems.map((product) => {
-        return { ...product, toggled: !allChecked ? true : false };
+        return { ...product, toggled: newAllChecked };
       });
 
       // Recalculate subtotal after updating cart items
@@ -132,49 +98,46 @@ const CartPage = () => {
               (item.product.price * (item.product.discount || 0)) / 100),
         0
       );
-    setSubtotal(parseFloat(newSubtotal.toFixed(2)));
+    setSubTotal(parseFloat(newSubtotal.toFixed(2)));
   };
-
   const handleChange = (id: string) => {
     setCartItems((prevItems) => {
       const updatedCartItems = prevItems.map((product) => {
         if (product.product._id === id) {
-          if (product.toggled) {
-            setAllChecked(false);
-            setCheckItems(checkItems?.filter((item) => item != id));
-          } else {
-            setCheckItems((prev) => (prev ? [...prev, id] : [id]));
-            if (cartItems.length == 1) setAllChecked(true);
-          }
-          return { ...product, toggled: !product.toggled };
+          return toggleProductCheck(product, id);
         }
         return product;
       });
 
+      // Recalculate allChecked dynamically based on the toggled state of all items
+      const allChecked = updatedCartItems.every((item) => item.toggled);
+
       // Recalculate subtotal after updating cart items
       recalculateSubtotal(updatedCartItems);
+      setAllChecked(allChecked); // Update the "allChecked" state based on item toggles
       return updatedCartItems;
     });
   };
 
-  const updateCheckItems = (id: string) => {
-    setCheckItems((prevItems) => (prevItems ? [...prevItems, id] : [id]));
+  const toggleProductCheck = (product: any, id: string) => {
+    const updatedProduct = { ...product, toggled: !product.toggled };
+
+    // Handle adding/removing from checked items
+    if (updatedProduct.toggled) {
+      handleAddItem(id);
+    } else {
+      handleRemoveItem(id);
+    }
+
+    return updatedProduct;
+  };
+  const handleAddItem = (id: string) => {
+    setCheckItems((prev) => (prev ? [...prev, id] : [id]));
   };
 
-  const updateSubtotal = (product: any, quantity: number) => {
-    console.log("SUBTOTAL UPDATE: ", subTotal);
-    if (!product.toggled)
-      setSubtotal((prevSubTotal) =>
-        parseFloat((prevSubTotal - product.subTotal * quantity).toFixed(2))
-      );
-    else
-      setSubtotal((prevSubTotal) =>
-        parseFloat((prevSubTotal + product.subTotal * quantity).toFixed(2))
-      );
+  const handleRemoveItem = (id: string) => {
+    setCheckItems((prev) => prev?.filter((item) => item !== id));
   };
-
-  const options = ["Edit", "Delete"];
-  const defaultOption = options[0];
 
   const toggleDelete = () => {
     console.log("CHECKED ITEMS: ", checkItems);
@@ -235,51 +198,6 @@ const CartPage = () => {
     }
   };
 
-  // const addQuantity = async (productID: string) => {
-  //   const { success, updatedCart } = await updateUserCart({
-  //     _id: productID,
-  //     quantity: 1,
-  //   });
-
-  //   if (success) {
-  //     setCartItems((prevItems) =>
-  //       prevItems.map((item) => {
-  //         if (item.product._id === productID) {
-  //           return { ...item, quantity: item.quantity + 1 };
-  //         }
-  //         return item;
-  //       })
-  //     );
-  //     console.log("Quantity increased successfully!");
-  //   } else {
-  //     console.error("Failed to increase quantity.");
-  //   }
-  // };
-
-  // const decreaseQuantity = async (productID: string) => {
-  //   const { success, updatedCart } = await updateUserCart({
-  //     _id: productID,
-  //     quantity: -1,
-  //   });
-
-  //   if (success) {
-  //     setCartItems((prevItems) =>
-  //       prevItems.map((item) => {
-  //         if (item.product._id === productID) {
-  //           return {
-  //             ...item,
-  //             quantity: Math.max(item.quantity - 1, 1), // Prevent negative quantity
-  //           };
-  //         }
-  //         return item;
-  //       })
-  //     );
-  //     console.log("Quantity decreased successfully!");
-  //   } else {
-  //     console.error("Failed to decrease quantity.");
-  //   }
-  // };
-
   return (
     <div className="w-[90%] m-auto mt-4 max-w-[1200px] pb-52 ">
       <Toaster
@@ -327,9 +245,7 @@ const CartPage = () => {
                   >
                     <Checkbox
                       checked={item.toggled}
-                      onChange={() =>
-                        handleChange(item.product._id, item.quantity)
-                      }
+                      onChange={() => handleChange(item.product._id)}
                       inputProps={{ "aria-label": "controlled" }}
                       sx={{
                         color: "primary",
@@ -345,7 +261,7 @@ const CartPage = () => {
                           <img
                             src={item.product.image}
                             alt={item.product.title}
-                            className=" xs:w-28 xs:h-28 object-scale-down"
+                            className=" xs:w-28 xs:h-28 object-contain"
                           />
                         </div>
                       </Link>
@@ -405,9 +321,6 @@ const CartPage = () => {
                           </div>
                         </div>
                       </div>
-                      {/* <div className="absolute  right-0 flex h-6 w-6 items-center justify-center bg-red-500 rounded-full">
-                      <DeleteOutlineIcon className="text-white " fontSize="2" />
-                    </div> */}
                     </div>
                   </div>
                 ))}
@@ -485,6 +398,3 @@ const CartPage = () => {
 };
 
 export default CartPage;
-function setWishlistItems(arg0: (prevItems: any) => any) {
-  throw new Error("Function not implemented.");
-}
