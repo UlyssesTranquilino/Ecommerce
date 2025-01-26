@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
-import router from "./routes/product.route";
+import productRouter from "./routes/product.route"; // Renamed for clarity
 import wishlistRouter from "./routes/wishlist.route";
 import userRouter from "./routes/user.route";
 import path from "path";
@@ -14,17 +14,18 @@ const _dirname = path.resolve();
 // Create an Express application
 const app = express();
 
-// Configure CORS middleware to allow all origins
+// Configure CORS middleware to allow requests from your frontend
 const corsOptions = {
-  origin: "*", // Allow all origins
+  origin: 'https://shop-at-exclusive.netlify.app', // Replace with your frontend's URL
 };
 
 app.use(cors(corsOptions)); // Apply CORS middleware globally
 app.use(express.json());
-app.use("", userRouter);
-app.use("", router);
-app.use("", wishlistRouter);
-app.use("", userRouter);
+
+// Define routes with proper paths
+app.use('/api/products', productRouter); // Use '/api/products' or your desired path
+app.use('/api/wishlists', wishlistRouter);
+app.use('/api/users', userRouter); 
 
 app.listen(PORT, () => {
   connectDB();
