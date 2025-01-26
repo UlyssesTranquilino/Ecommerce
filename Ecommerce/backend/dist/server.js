@@ -28,6 +28,7 @@ const allowedOrigins = [
 // Configure CORS middleware
 const corsOptions = {
     origin: (origin, callback) => {
+        console.log("callsole: ", origin);
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         }
