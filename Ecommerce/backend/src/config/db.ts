@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 // import axios from "axios";
-// import Product from "../models/product.model"; // Ensure your path is correct
+import Product from "../models/product.model"; // Ensure your path is correct
 
 dotenv.config();
 
@@ -10,6 +10,21 @@ const connectDB = async () => {
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGO_URI as string, {});
     console.log("MongoDB connected");
+
+    // const generateRandomRating = () => {
+    //   const isHighRating = Math.random() < 0.8; // 80% chance for 4-5 stars
+    //   if (isHighRating) {
+    //     return (Math.random() * 1 + 4).toFixed(1); // Random rating between 4 and 5
+    //   } else {
+    //     return (Math.random() * 2 + 2).toFixed(1); // Random rating between 2 and 4
+    //   }
+    // };
+
+    const products = await Product.find(); // Fetch all products
+    for (let product of products) {
+      product.stock = Math.floor(Math.random() * 100 + 10);
+      await product.save();
+    }
 
     // Commented-out code for fetching and inserting products
     /*
