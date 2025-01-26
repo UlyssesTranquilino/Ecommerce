@@ -10,7 +10,7 @@ import userRouter from "./routes/user.route";
 import path from "path";
 import cors from "cors"; // Import CORS middleware
 
-const PORT = process.env.PORT ?? 5000;
+const PORT = process.env.PORT || 5000;
 dotenv.config();
 
 const _dirname = path.resolve();
@@ -18,31 +18,31 @@ const _dirname = path.resolve();
 const app = express();
 
 // Specify the allowed origins
-// const allowedOrigins = [
-//   "http://localhost:5173",
-//   "http://192.168.56.1:5173",
-//   "http://192.168.1.9:5173",
-//   "http://192.168.1.5:5173",
-//   "http://192.168.1.6:5173",
-//   "http://192.168.1.7:5173",
-//   "https://clever-figolla-513dc1.netlify.app",
-// ];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://192.168.56.1:5173",
+  "http://192.168.1.9:5173",
+  "http://192.168.1.5:5173",
+  "http://192.168.1.6:5173",
+  "http://192.168.1.7:5173",
+  "https://shop-at-exclusive.netlify.app/",
+];
 
 // Configure CORS middleware
-// const corsOptions = {
-//   origin: (
-//     origin: string | undefined,
-//     callback: (err: Error | null, allow?: boolean) => void
-//   ) => {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-// };
+const corsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use("", userRouter);
 app.use("", router);
