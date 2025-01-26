@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import WishlistCard from "../components/WishlistCard";
 import EmptyWishlistImage from "../assets/Images/Empty Wishlist.png";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { Product } from "../interfaces/Product";
 //TOASTER
 import toast, { Toaster } from "react-hot-toast";
 import { useProductStore, useUserStore } from "../../store/product";
 
 const WishlistPage = () => {
   const navigate = useNavigate();
-  const { currentUser, deleteUserWishlist, addUserCart } = useUserStore();
+  const { currentUser, deleteUserWishlist, addUserCart }: any = useUserStore();
   const { fetchSingleProduct } = useProductStore();
 
-  const [wishlistItems, setWishlistItems] = useState<Product[]>([]); // Renamed from categoryProduct
+  const [wishlistItems, setWishlistItems] = useState<any[]>([]); // Renamed from categoryProduct
   const [isFetching, setIsFetching] = useState<boolean>(true); // Renamed from isLoading
 
   useEffect(() => {
@@ -86,7 +85,7 @@ const WishlistPage = () => {
         ).toFixed(2);
       else productPrice = product?.price;
 
-      const { success, message } = await addUserCart({
+      const { success } = await addUserCart({
         _id: product?._id,
         price: productPrice,
         quantity: 1,
@@ -117,7 +116,7 @@ const WishlistPage = () => {
       />
 
       {isFetching ? (
-        <div className="flex justify-center mt-24">
+        <div className="flex justify-center mt-24 pt-24">
           <CircularProgress sx={{ color: "#DB4444" }} />
         </div>
       ) : wishlistItems.length > 0 ? (

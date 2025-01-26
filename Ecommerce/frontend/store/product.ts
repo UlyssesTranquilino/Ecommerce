@@ -60,7 +60,7 @@ const normalizeUser = (user: any) => {
   return user;
 };
 
-export const useProductStore = create<ProductStoreState>((set, get) => ({
+export const useProductStore = create<ProductStoreState>((set) => ({
   products: [],
   setProducts: (products) => set({ products }),
   updateProduct: async (productID, updatedProduct) => {
@@ -78,8 +78,6 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
         const error = await res.json();
         throw new Error(error.message || "Failed to update product");
       }
-
-      const data = await res.json();
 
       // Update the local state with the updated product
       set((state) => ({

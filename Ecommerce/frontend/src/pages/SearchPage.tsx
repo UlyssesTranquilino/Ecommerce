@@ -38,7 +38,7 @@ import classNames from "classnames";
 const Search = () => {
   const navigate = useNavigate();
   const { searchItem } = useParams();
-  const [searchProduct, setSearchProduct] = useState<string>(searchItem || "");
+  const [searchProduct, setSearchProduct] = useState<string>(searchItem ?? "");
   const [isFetching, setIsFetching] = useState<boolean>(true);
 
   const [filterActive, setFilterActive] = useState<boolean>(false);
@@ -47,10 +47,7 @@ const Search = () => {
     navigate(-1); // Go back in history
   };
 
-  const {
-    fetchProducts,
-    products,
-  }: { fetchProducts: Function; products: Product[] } = useProductStore(); //Zustand Functions
+  const { fetchProducts, products }: any = useProductStore(); //Zustand Functions
 
   //Fetch products
   useEffect(() => {
@@ -68,10 +65,16 @@ const Search = () => {
       setSearchProduct(searchItem); // Update the searchProduct state with the URL param
       setProductsToShow(
         products.filter(
-          (product) =>
-            product.title.toLowerCase().includes(searchItem.toLowerCase()) ||
-            product.brand.toLowerCase().includes(searchItem.toLowerCase()) ||
-            product.category.toLowerCase().includes(searchItem.toLowerCase())
+          (product: any) =>
+            product.title
+              .toLowerCase()
+              .includes(searchItem?.toLowerCase() ?? "") ||
+            product.brand
+              .toLowerCase()
+              .includes(searchItem?.toLowerCase() ?? "") ||
+            product.category
+              .toLowerCase()
+              .includes(searchItem?.toLowerCase() ?? "")
         )
       );
     }
@@ -114,7 +117,7 @@ const Search = () => {
   };
 
   const handleSearch = () => {
-    if (searchProduct && searchProduct.trim()) {
+    if (searchProduct?.trim()) {
       navigate(`/search/${searchProduct}`); // Programmatically navigate
       navigate(0); // Force reload if you're already on the same page
     }
@@ -145,39 +148,39 @@ const Search = () => {
     }
 
     // Determine if the filter is active
-    setFilterActive(!!(filterRating || filterMinPrice || filterMaxPrice));
+    setFilterActive(!!(filterRating ?? filterMinPrice ?? filterMaxPrice));
     setOpen(false); // Close the filter drawer
 
     console.log("FILTER RATING: ", filterRating);
 
     // Always start filtering from the original products list
     let filteredProducts = products.filter(
-      (product) =>
-        product.title.toLowerCase().includes(searchItem.toLowerCase()) ||
-        product.brand.toLowerCase().includes(searchItem.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchItem.toLowerCase())
+      (product: any) =>
+        product.title.toLowerCase().includes(searchItem?.toLowerCase() ?? "") ||
+        product.brand.toLowerCase().includes(searchItem?.toLowerCase() ?? "") ||
+        product.category.toLowerCase().includes(searchItem?.toLowerCase() ?? "")
     );
 
     // Apply rating filter
     if (filterRating) {
       filteredProducts = filteredProducts.filter(
-        (product) => product.rating >= filterRating
+        (product: any) => product.rating >= filterRating
       );
     }
 
     // Apply price range filters
     if (filterMinPrice && filterMaxPrice) {
       filteredProducts = filteredProducts.filter(
-        (product) =>
+        (product: any) =>
           filterMinPrice <= product.price && product.price <= filterMaxPrice
       );
     } else if (filterMinPrice) {
       filteredProducts = filteredProducts.filter(
-        (product) => filterMinPrice <= product.price
+        (product: any) => filterMinPrice <= product.price
       );
     } else if (filterMaxPrice) {
       filteredProducts = filteredProducts.filter(
-        (product) => product.price <= filterMaxPrice
+        (product: any) => product.price <= filterMaxPrice
       );
     }
 
@@ -191,10 +194,16 @@ const Search = () => {
 
     setProductsToShow(
       products.filter(
-        (product) =>
-          product.title.toLowerCase().includes(searchItem.toLowerCase()) ||
-          product.brand.toLowerCase().includes(searchItem.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchItem.toLowerCase())
+        (product: any) =>
+          product.title
+            .toLowerCase()
+            .includes(searchItem?.toLowerCase() ?? "") ||
+          product.brand
+            .toLowerCase()
+            .includes(searchItem?.toLowerCase() ?? "") ||
+          product.category
+            .toLowerCase()
+            .includes(searchItem?.toLowerCase() ?? "")
       )
     );
 
@@ -204,7 +213,7 @@ const Search = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const DrawerList = (
-    <Box sx={{ width: 275 }} role="presentation">
+    <Box sx={{ width: 275 }}>
       <div className="p-3">
         <h1 className="font-semibold mb-3 mt-4">Search Filter</h1>
         <h1 className="text-md mt-2">Rating</h1>

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
-import { TextField } from "@mui/material";
+import React, { useState } from "react";
+
 import AdSlider from "../components/AdSlider";
 import NewArrival from "../components/NewArrival";
 import SearchIcon from "@mui/icons-material/Search";
@@ -10,11 +9,9 @@ import AllProducts from "../components/AllProducts";
 
 //vid: https://www.youtube.com/watch?v=Ejg7es3ba2k
 //LINK
-import { Link, useNavigate } from "react-router-dom";
-import { useUserStore } from "../../store/product";
+import { Link, useNavigate } from "react-router-dom"; // Add semicolon here
 const HomePage = () => {
   const navigate = useNavigate();
-  const { currentUser } = useUserStore();
   const [searchItem, setSearchItem] = useState<string>("");
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

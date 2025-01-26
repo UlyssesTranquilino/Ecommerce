@@ -11,18 +11,15 @@ import { Product } from "../Intefaces/Product";
 
 //COMPONENTS
 import ProductCard from "./ProductCard";
-import CategoryPage from "../pages/CategoryPage";
 
 //LINK
 import { Link } from "react-router-dom";
 
 //MUI
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
 
 //MUI ICONS
 
@@ -36,6 +33,21 @@ import KitchenOutlinedIcon from "@mui/icons-material/KitchenOutlined";
 import { useProductStore } from "../../store/product";
 
 const Categories = () => {
+  const handleCategoryClick = (categoryName: string) => {
+    setCategories((prevCategories) => {
+      return prevCategories.map((cat) => {
+        if (categoryName === cat.name) {
+          setCurrCategory(cat.name.toLowerCase());
+          return {
+            ...cat,
+            active: true,
+          };
+        }
+        return { ...cat, active: false };
+      });
+    });
+  };
+
   const CustomNextArrow = ({ onClick }: any) => {
     return (
       <div
@@ -46,6 +58,7 @@ const Categories = () => {
       </div>
     );
   };
+
   const CustomPrevArrow = ({ onClick }: any) => {
     return (
       <div
@@ -136,10 +149,7 @@ const Categories = () => {
     ],
   };
 
-  const {
-    fetchProducts,
-    products,
-  }: { fetchProducts: Function; products: Product[] } = useProductStore();
+  const { fetchProducts, products }: any = useProductStore();
 
   useEffect(() => {
     fetchProducts();
@@ -218,19 +228,7 @@ const Categories = () => {
                     : "hover:bg-gray-200 hover:text-black "
                 } text-textPrimary `}
                   onClick={() => {
-                    setSortBy("");
-                    setCategories((prevCategories) => {
-                      return prevCategories.map((cat) => {
-                        if (item.name === cat.name) {
-                          setCurrCategory(cat.name.toLowerCase());
-                          return {
-                            ...cat,
-                            active: true,
-                          };
-                        }
-                        return { ...cat, active: false };
-                      });
-                    });
+                    handleCategoryClick(item.name);
                   }}
                 >
                   {item.icon}

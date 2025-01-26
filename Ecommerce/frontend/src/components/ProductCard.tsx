@@ -1,6 +1,5 @@
 import React from "react";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { Link } from "react-router-dom";
+
 import Rating from "@mui/material/Rating";
 const ProductCard = (product: {
   _id: React.Key | null | undefined;

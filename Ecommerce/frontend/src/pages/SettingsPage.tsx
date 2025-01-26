@@ -1,19 +1,12 @@
-import { useState, useEffect } from "react";
-import { useProductStore } from "../../store/product";
-
-import PaymentIcon from "@mui/icons-material/Payment";
-import InboxIcon from "@mui/icons-material/Inbox";
-import { RiTruckLine } from "react-icons/ri";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-
+import { useState } from "react";
 import { useUserStore } from "../../store/product";
-import { Link, useLocation, useNavigate } from "react-router-dom"; // Import useLocation
+
+import { Link, useNavigate } from "react-router-dom"; // Import useLocation
 
 const SettingsPage = () => {
-  const location = useLocation(); // Access the current location if needed
   const navigate = useNavigate(); // Use navigate instead of router.push
-  const { fetchSingleProduct } = useProductStore();
-  const { currentUser, updateUser } = useUserStore();
+
+  const { updateUser }: any = useUserStore();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -46,7 +39,7 @@ const SettingsPage = () => {
       return;
     }
 
-    if (newPassword.length < 7 || newPassword.length < 7) {
+    if (newPassword.length < 7) {
       setIsSuccess(false);
       setMessage("Password must be at least 8 characters long.");
       return;

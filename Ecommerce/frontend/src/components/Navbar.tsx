@@ -1,20 +1,14 @@
-import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom"; // Import useLocation
-import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Logo from "../assets/Logo/Logo Icon.png";
-import { useNavigate } from "react-router-dom";
 
 import { useUserStore } from "../../store/product";
 
 const Navbar = () => {
-  const [showSignin, setShowSignin] = useState(true);
-  const navigate = useNavigate();
-
   const location = useLocation(); // Get the current location
   const isWishlistActive = location.pathname === "/wishlist"; // Check if the path is /wishlist
   const isCartActive = location.pathname === "/cart";

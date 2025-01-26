@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(useGSAP);
-import { Link, useNavigate } from "react-router-dom";
+
 //RATING MUI ICONS
 import Rating from "@mui/material/Rating";
 //ICONS
@@ -15,7 +15,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 //RELATED ITEMS
 import RelatedItems from "../components/RelatedItems";
 
-import { useProductStore, useUserStore } from "../../store/product";
+import { useUserStore } from "../../store/product";
 
 //TOASTER
 import toast, { Toaster } from "react-hot-toast";
@@ -37,20 +37,11 @@ const ProductPage = () => {
     model: string;
     price: number;
     rating: number;
-    stock: nubmer;
+    stock: number;
     ratingCount: number;
   }
 
-  interface User {
-    _id: string;
-    name: string;
-    email: string;
-    password?: string;
-    carts: Product[];
-    wishlists: Product[];
-  }
-
-  const { currentUser, addUserWishlist, deleteUserWishlist, addUserCart } =
+  const { currentUser, addUserWishlist, deleteUserWishlist, addUserCart }: any =
     useUserStore();
 
   const { id } = useParams();
@@ -122,6 +113,7 @@ const ProductPage = () => {
   };
 
   const [cartToggled, setCartToggled] = useState(false);
+  console.log(cartToggled);
 
   const toggleAddToCart = async (device: string) => {
     if (!currentUser) {
@@ -129,7 +121,7 @@ const ProductPage = () => {
     } else {
       setCartToggled(true);
 
-      let productPrice: number;
+      let productPrice: any;
       if (product?.discount != null)
         productPrice = (
           product?.price -
@@ -137,7 +129,7 @@ const ProductPage = () => {
         ).toFixed(2);
       else productPrice = product?.price;
 
-      const { success, message } = await addUserCart({
+      const { success } = await addUserCart({
         _id: product?._id,
         price: productPrice,
         quantity: quantity,
@@ -156,13 +148,12 @@ const ProductPage = () => {
   //TOASTER
   const notifyWishlist = (message: string) => toast(message);
 
-  const container = useRef();
+  const container = useRef<HTMLDivElement>(null);
   const { contextSafe } = useGSAP({ scope: container });
 
   const onClickCartAnimation = contextSafe(() => {
     setCartToggled(true);
     const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
 
     gsap.from(".imgCart", {
       opacity: 0.4,
@@ -185,6 +176,16 @@ const ProductPage = () => {
       },
     });
   });
+
+  const handleTabClick = (title: string) => {
+    setMobileTabs((prev) =>
+      prev.map((item) => {
+        return item.title === title
+          ? { ...item, active: true }
+          : { ...item, active: false };
+      })
+    );
+  };
 
   return (
     <div className="p-5 max-w-[1200px] mx-auto relative">
@@ -232,7 +233,7 @@ const ProductPage = () => {
             } else {
               notifyWishlist("Removed to Wishlist!");
               if (product?._id) {
-                deleteWishlist(product._id);
+                deleteUserWishlist(product._id);
               }
             }
           }}
@@ -261,7 +262,7 @@ const ProductPage = () => {
                 <div className="flex items-center">
                   <Rating
                     name="half-rating-read"
-                    value={product?.rating || 0}
+                    value={product?.rating ?? 0}
                     precision={0.5}
                     readOnly
                     size="small"
@@ -368,7 +369,7 @@ const ProductPage = () => {
                   } else {
                     notifyWishlist("Removed to Wishlist!");
                     if (product?._id) {
-                      deleteWishlist(product._id);
+                      deleteUserWishlist(product._id);
                     }
                   }
                 }}
@@ -382,7 +383,7 @@ const ProductPage = () => {
             </div>
             <div>
               <div className="mt-0 md:hidden">
-                {mobileTabs.map((tab, index) => (
+                {mobileTabs.map((tab) => (
                   <button
                     className={`${
                       tab.active
@@ -391,16 +392,7 @@ const ProductPage = () => {
                     } rounded-full px-2 py-1.5 mr-1`}
                     key={tab.title}
                     onClick={() => {
-                      setMobileTabs((prev) =>
-                        prev.map((item) => {
-                          if (item.title === tab.title) {
-                            setActiveTab(item.content);
-                            return { ...item, active: true };
-                          } else {
-                            return { ...item, active: false };
-                          }
-                        })
-                      );
+                      handleTabClick(tab.title);
                     }}
                   >
                     <p className="text-sm">{tab.title}</p>
