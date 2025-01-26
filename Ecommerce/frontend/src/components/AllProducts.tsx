@@ -39,11 +39,12 @@ const AllProducts = () => {
     fetchProducts();
   }, [fetchProducts]);
   useEffect(() => {
-    setProductsToShow(products);
+    setProductsToShow(products.filter((product, index) => index < 16));
   }, [products]);
 
-  const [productsToShow, setProductsToShow] = useState<Product[]>(products);
+  const [productsToShow, setProductsToShow] = useState<Product[]>([]);
   const [sortBy, setSortBy] = useState("");
+  const [viewAllClicked, setViewAllClicked] = useState(false);
 
   const handleChange = (event: SelectChangeEvent) => {
     const selectedValue = event.target.value;
@@ -82,6 +83,11 @@ const AllProducts = () => {
     }
 
     setProductsToShow(sortedProducts);
+  };
+
+  const handleViewAllClick = () => {
+    setViewAllClicked(true);
+    setProductsToShow(products); // Show all products when button is clicked
   };
   return (
     <div>
@@ -139,7 +145,7 @@ const AllProducts = () => {
       )}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
         {productsToShow.length > 0 ? (
-          products.map((product: Product) => (
+          productsToShow.map((product: Product) => (
             <Link to={`/product/${product._id}`} key={product._id}>
               <div className="rounded-lg bg-white flex-col relative border-redAccent hover:shadow-md cursor-pointer hover:translate-y-[-4px] transition-transform duration-200 ease-in-out ">
                 <div className="rounded-t-lg p-auto h-[300px] flex items-center justify-center">
@@ -195,6 +201,17 @@ const AllProducts = () => {
           </div>
         )}
       </div>
+
+      {productsToShow.length > 0 && !viewAllClicked && (
+        <div className="flex justify-center mt-20">
+          <button
+            className="bg-redAccent text-white px-6 py-2 rounded-sm"
+            onClick={handleViewAllClick}
+          >
+            View All Products
+          </button>
+        </div>
+      )}
     </div>
   );
 };

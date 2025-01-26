@@ -156,7 +156,7 @@ export const useUserStore = create(
           const currentUser = get().currentUser;
 
           const res = await fetch(
-            `http://localhost:5000/user/${currentUser?.id}`,
+            `http://localhost:5000/user/${currentUser?._id}`,
             {
               method: "PUT",
               headers: {

@@ -345,7 +345,7 @@ const CartPage = () => {
                           <img
                             src={item.product.image}
                             alt={item.product.title}
-                            className=" xs:w-28 xs:h-28 object-fit"
+                            className=" xs:w-28 xs:h-28 object-scale-down"
                           />
                         </div>
                       </Link>
@@ -415,13 +415,13 @@ const CartPage = () => {
             </div>
           </div>
 
-          <div className="fixed md:relative h-24 w-[90%] bottom-10 bg-gray-100 md:h-80 md:top-6 md:pt-10 p-4 ">
+          <div className="md:relative h-24 w-[100%] bottom-10 mt-24 md:bg-gray-100 md:h-80 md:top-6 md:pt-10 p-4 ">
             <div className="hidden mb-12 md:flex md:items-center ">
               <h1 className="text-redAccent font-semibold text-md xs:text-xl">
                 Order Summary
               </h1>
             </div>
-            <div className="flex items-center justify-between ">
+            <div className="flex items-center justify-between  ">
               <div className="flex items-center relative mb-1">
                 <Checkbox
                   checked={allChecked}
@@ -449,7 +449,7 @@ const CartPage = () => {
             <div className="mb-1">
               <h1>Shipping: Free</h1>
             </div>
-            <div className="flex items-center w-[100%] md:mt-4">
+            <div className="flex items-center w-[100%] md:mt-4 ">
               <button className="bg-redAccent h-12 w-[100%] rounded-md text-white px-3  bottom-0">
                 Check Out
               </button>

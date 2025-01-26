@@ -31,21 +31,17 @@ import ProductCard from "../components/ProductCard";
 //SPELL CHECKER
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
+
 import Divider from "@mui/material/Divider";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import classNames from "classnames";
 
 const Search = () => {
   const navigate = useNavigate();
   const { searchItem } = useParams();
   const [searchProduct, setSearchProduct] = useState<string>(searchItem || "");
   const [isFetching, setIsFetching] = useState<boolean>(true);
-  const [suggestion, setSuggestion] = useState<string>("");
+
+  const [filterActive, setFilterActive] = useState<boolean>(false);
 
   const handleBackClick = () => {
     navigate(-1); // Go back in history
@@ -131,36 +127,103 @@ const Search = () => {
   };
 
   //Drawer Mobile
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const toggleFilter = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
 
+  const [filterRating, setFilterRating] = useState<number | null>(null);
+  const [filterMinPrice, setFilterMinPrice] = useState<number | null>(null);
+  const [filterMaxPrice, setFilterMaxPrice] = useState<number | null>(null);
+
+  const filterProducts = () => {
+    if (filterMinPrice && filterMaxPrice) {
+      if (filterMinPrice > filterMaxPrice) {
+        setErrorMessage("Max price must be greater than the min price.");
+        return;
+      }
+    }
+
+    // Determine if the filter is active
+    setFilterActive(!!(filterRating || filterMinPrice || filterMaxPrice));
+    setOpen(false); // Close the filter drawer
+
+    console.log("FILTER RATING: ", filterRating);
+
+    // Always start filtering from the original products list
+    let filteredProducts = products.filter(
+      (product) =>
+        product.title.toLowerCase().includes(searchItem.toLowerCase()) ||
+        product.brand.toLowerCase().includes(searchItem.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchItem.toLowerCase())
+    );
+
+    // Apply rating filter
+    if (filterRating) {
+      filteredProducts = filteredProducts.filter(
+        (product) => product.rating >= filterRating
+      );
+    }
+
+    // Apply price range filters
+    if (filterMinPrice && filterMaxPrice) {
+      filteredProducts = filteredProducts.filter(
+        (product) =>
+          filterMinPrice <= product.price && product.price <= filterMaxPrice
+      );
+    } else if (filterMinPrice) {
+      filteredProducts = filteredProducts.filter(
+        (product) => filterMinPrice <= product.price
+      );
+    } else if (filterMaxPrice) {
+      filteredProducts = filteredProducts.filter(
+        (product) => product.price <= filterMaxPrice
+      );
+    }
+
+    setProductsToShow(filteredProducts); // Update the filtered products to display
+  };
+
+  const handleResetFilter = () => {
+    setFilterRating(null);
+    setFilterMinPrice(null);
+    setFilterMaxPrice(null);
+
+    setProductsToShow(
+      products.filter(
+        (product) =>
+          product.title.toLowerCase().includes(searchItem.toLowerCase()) ||
+          product.brand.toLowerCase().includes(searchItem.toLowerCase()) ||
+          product.category.toLowerCase().includes(searchItem.toLowerCase())
+      )
+    );
+
+    setOpen(false);
+  };
+
+  const [errorMessage, setErrorMessage] = useState("");
+
   const DrawerList = (
-    <Box sx={{ width: 250 }} role="presentation">
-      <div className="p-4">
-        <h1 className="font-semibold mb-3">Search Filter</h1>
-        <h1 className="text-md">Rating</h1>
-        <div className="m-2 mb-5 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <Rating name="read-only" value={5} readOnly />
-          </div>
-          <div className="flex items-center gap-2">
-            <Rating name="read-only" value={4} readOnly />
-            <p className="text-sm">& Up</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Rating name="read-only" value={3} readOnly />
-            <p className="text-sm">& Up</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Rating name="read-only" value={2} readOnly />
-            <p className="text-sm">& Up</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Rating name="read-only" value={1} readOnly />
-            <p className="text-sm">& Up</p>
-          </div>
+    <Box sx={{ width: 275 }} role="presentation">
+      <div className="p-3">
+        <h1 className="font-semibold mb-3 mt-4">Search Filter</h1>
+        <h1 className="text-md mt-2">Rating</h1>
+        <div className="mt-1 mb-5 flex flex-col gap-2">
+          {[5, 4, 3, 2, 1].map((rating) => (
+            <div
+              key={rating}
+              className={classNames(
+                "flex items-center gap-2 hover:bg-gray-100 p-2 cursor-pointer",
+                {
+                  "bg-[#E9ECEF]": filterRating === rating,
+                }
+              )}
+              onClick={() => setFilterRating(rating)}
+            >
+              <Rating name="read-only" value={rating} readOnly />
+              {rating !== 5 && <p className="text-sm">& Up</p>}
+            </div>
+          ))}
         </div>
 
         <Divider />
@@ -170,20 +233,77 @@ const Search = () => {
             <input
               type="number"
               placeholder="$MIN"
-              className="w-1/2 p-1 mt-2 border-[1px] border-gray-400 text-sm"
+              value={filterMinPrice ?? ""}
+              className="w-1/2 p-1 mt-2 border-[1px] border-gray-400 text-sm text-center"
               style={{ outline: "none" }}
+              onChange={(e) => setFilterMinPrice(Number(e.target.value))}
             />
             <div className="w-20 h-[1px] bg-gray-400" />
             <input
               type="number"
               placeholder="$MIN"
-              className="w-1/2 p-1 mt-2 border-[1px] border-gray-400 text-sm"
+              value={filterMaxPrice ?? ""}
+              className="w-1/2 p-1 mt-2 border-[1px] border-gray-400 text-sm text-center"
               style={{ outline: "none" }}
+              onChange={(e) => setFilterMaxPrice(Number(e.target.value))}
             />
           </div>
-          <button className="mt-5 text-white bg-[#DB4444] w-full h-8 text-sm">
-            APPLY
-          </button>
+
+          <div className="flex items-center gap-1 mt-2">
+            {[
+              [0, 200],
+              [200, 400],
+              [400, 600],
+            ].map((price) => (
+              <div
+                key={price[0]}
+                className={classNames(
+                  "flex items-center bg-[#E9ECEF] hover:bg-gray-100 cursor-pointer rounded-sm",
+                  {
+                    "bg-white":
+                      filterMinPrice === price[0] &&
+                      filterMaxPrice === price[1],
+                    "border-[#DB4444]":
+                      filterMinPrice === price[0] &&
+                      filterMaxPrice === price[1],
+                    "border-[1px]":
+                      filterMinPrice === price[0] &&
+                      filterMaxPrice === price[1],
+                  }
+                )}
+              >
+                <button
+                  className="text-xs py-2 px-5 rouned-md"
+                  onClick={() => {
+                    setFilterMinPrice(price[0]);
+                    setFilterMaxPrice(price[1]);
+                  }}
+                >
+                  {price[0]}-{price[1]}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 flex items-center justify-center gap-2">
+            <button
+              className="rounded-sm w-full border-[1px] border-[#DB4444] h-8 text-sm text-[#DB4444]"
+              onClick={handleResetFilter}
+            >
+              RESET
+            </button>
+
+            <button
+              className="rounded-sm text-white bg-[#DB4444] w-full h-8 text-sm"
+              onClick={filterProducts}
+            >
+              APPLY
+            </button>
+          </div>
+
+          {errorMessage && (
+            <p className="text-sm text-[#DB4444] mt-3">{errorMessage}</p>
+          )}
         </div>
       </div>
     </Box>
@@ -196,6 +316,7 @@ const Search = () => {
           onClick={() => {
             handleBackClick();
           }}
+          className="cursor-pointer"
         >
           <ArrowBackIcon fontSize="small" />
         </div>
@@ -221,7 +342,12 @@ const Search = () => {
           </button>
         </div>
 
-        <div onClick={toggleFilter(true)}>
+        <div
+          onClick={toggleFilter(true)}
+          className={
+            filterActive ? "text-redAccent cursor-pointer" : "cursor-pointer"
+          }
+        >
           <FilterAltOutlinedIcon />
           <p className="text-xs">Filter</p>
         </div>

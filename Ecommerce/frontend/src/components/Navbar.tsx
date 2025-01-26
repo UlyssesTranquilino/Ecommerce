@@ -6,6 +6,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Logo from "../assets/Logo/Logo Icon.png";
 import { useNavigate } from "react-router-dom";
 
 import { useUserStore } from "../../store/product";
@@ -26,16 +27,19 @@ const Navbar = () => {
   console.log("NAV BAR CURRENT USER: ", currentUser);
 
   return (
-    <nav className="bg-black text-white h-12 flex items-center justify-between pl-5">
+    <nav className="bg-black text-white h-14 flex items-center justify-between pl-5 md:px-4 md:pl-8">
       <div className="flex items-center">
         {/* <button className="text-textPrimary mr-4 ml-4 flex items-center">
           <MenuIcon />
         </button> */}
 
         <Link to="/">
-          <button>
-            <h1 className="font-bold">EXCLUSIVE</h1>
-          </button>
+          <div className="flex items-center">
+            <img src={Logo} alt="Exclusive Logo" className="w-9 mr-1 " />
+            <button>
+              <h1 className="font-bold">EXCLUSIVE</h1>
+            </button>
+          </div>
         </Link>
       </div>
 
