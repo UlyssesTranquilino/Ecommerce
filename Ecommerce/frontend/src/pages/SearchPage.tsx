@@ -197,6 +197,8 @@ const Search = () => {
           product.category.toLowerCase().includes(searchItem.toLowerCase())
       )
     );
+
+    setOpen(false);
   };
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -314,6 +316,7 @@ const Search = () => {
           onClick={() => {
             handleBackClick();
           }}
+          className="cursor-pointer"
         >
           <ArrowBackIcon fontSize="small" />
         </div>
@@ -341,7 +344,9 @@ const Search = () => {
 
         <div
           onClick={toggleFilter(true)}
-          className={filterActive ? "text-redAccent" : ""}
+          className={
+            filterActive ? "text-redAccent cursor-pointer" : "cursor-pointer"
+          }
         >
           <FilterAltOutlinedIcon />
           <p className="text-xs">Filter</p>

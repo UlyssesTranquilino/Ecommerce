@@ -16,8 +16,13 @@ import Iphone from "./../../src/assets/BannerSlider/Iphone.png";
 import Sale from "./../../src/assets/BannerSlider/Sale.png";
 import Shipping from "./../../src/assets/BannerSlider/Shipping.png";
 
+//LINK
+import { Link, useParams, useNavigate } from "react-router-dom";
+
 import "../CSS/AdSlider.css";
 const AdSlider = () => {
+  const navigate = useNavigate();
+
   var settings = {
     dots: true,
     infinite: true,
@@ -32,35 +37,56 @@ const AdSlider = () => {
   return (
     <div className="w-[99%] m-auto">
       <Slider {...settings}>
-        <div className="ad-sale">
+        <div
+          className="ad-sale"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
           {isMediumBelow ? (
             <img src={SaleMobile} alt="Sale Banner Mobile" />
           ) : (
             <img src={Sale} alt="Sale Banner" />
           )}
         </div>
-        <div>
+        <div
+          onClick={() => {
+            navigate("/");
+          }}
+        >
           {isMediumBelow ? (
             <img src={ShippingMobile} alt="Sale Banner Mobile" />
           ) : (
             <img src={Shipping} alt="Sale Banner" />
           )}
         </div>
-        <div>
+        <div
+          onClick={() => {
+            navigate("product/67614cc70e031f9147919e22");
+          }}
+        >
           {isMediumBelow ? (
             <img src={IphoneMobile} alt="Sale Banner Mobile" />
           ) : (
             <img src={Iphone} alt="Sale Banner" />
           )}
         </div>
-        <div>
+        <div
+          onClick={() => {
+            navigate("product/67614cc70e031f9147919e15");
+          }}
+        >
           {isMediumBelow ? (
             <img src={ControllerMobile} alt="Sale Banner Mobile" />
           ) : (
             <img src={Controller} alt="Sale Banner" />
           )}
         </div>
-        <div>
+        <div
+          onClick={() => {
+            navigate("category/audio");
+          }}
+        >
           {isMediumBelow ? (
             <img src={HeadphonesMobile} alt="Sale Banner Mobile" />
           ) : (

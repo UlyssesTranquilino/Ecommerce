@@ -37,6 +37,7 @@ const ProductPage = () => {
     model: string;
     price: number;
     rating: number;
+    stock: nubmer;
     ratingCount: number;
   }
 
@@ -165,9 +166,10 @@ const ProductPage = () => {
 
     gsap.from(".imgCart", {
       opacity: 0.4,
+      display: "block",
     });
     gsap.to(".imgCart", {
-      x: viewportWidth - viewportWidth * 0.52,
+      x: viewportWidth - viewportWidth * 0.6,
       y: "-120%",
       scale: 0,
       opacity: 0,
@@ -185,15 +187,15 @@ const ProductPage = () => {
   });
 
   return (
-    <div className="p-5 max-w-[1200px] mx-auto">
+    <div className="p-5 max-w-[1200px] mx-auto relative">
       <div
-        className="absolute flex-1  z-10 w-[90%] h-52 flex items-center justify-center"
+        className="absolute flex-1 z-10 w-[90%] h-52 flex items-center justify-center md:block none"
         ref={container}
       >
         <img
           src={product?.image}
           alt={product?.title}
-          className="  imgCart w-[100%] max-w-[200px] mt-36 sm:mt-52 md:mt-80 md:mr-44 opacity-0"
+          className="imgCart w-[100%] max-w-[200px] mt-36 sm:mt-52 md:mt-80 md:mr-44 opacity-0"
         />
       </div>
       <Toaster
@@ -248,23 +250,38 @@ const ProductPage = () => {
           <img
             src={product?.image}
             alt={product?.title}
-            className="w-[100%] max-w-[500px]"
+            className="w-[100%] max-w-[500px] "
           />
         </div>
         <div className="mt-5 ">
           <div>
             <h1 className="font-bold text-[21px]">{product?.title}</h1>
             <div className="mt-1 flex items-center">
-              <Rating
-                name="half-rating-read"
-                value={product?.rating || 0}
-                precision={0.5}
-                readOnly
-                size="small"
-              />
-              <p className="opacity-50 text-sm ml-2">
-                ({product?.ratingCount} Reviews)
-              </p>
+              <div className="flex items-center">
+                <div className="flex items-center">
+                  <Rating
+                    name="half-rating-read"
+                    value={product?.rating || 0}
+                    precision={0.5}
+                    readOnly
+                    size="small"
+                  />
+                  <p className="opacity-50 text-sm ml-3">
+                    ({product?.ratingCount} Reviews)
+                    <span className="ml-1 md:ml-3">|</span>
+                  </p>
+                </div>
+
+                <div className="text-sm ml-1 md:ml-3">
+                  {product?.stock ? (
+                    <p className="text-[#007427]">
+                      In Stock ({product?.stock})
+                    </p>
+                  ) : (
+                    <p className="text-redAccent">Out of Stock</p>
+                  )}
+                </div>
+              </div>
             </div>
             <div className="mt-0">
               <h1 className="text-[24px]">
@@ -311,7 +328,7 @@ const ProductPage = () => {
             </div>
 
             <div className="bottom-3 right-0 w-80 grid-cols-8 gap-4 hidden md:grid ">
-              <div className="border-[1px] bg-white border-gray-600  w-full h-11 rounded-md col-span-3 grid grid-cols-4">
+              <div className="border-[1px] bg-white border-gray-600  w-full h-11 rounded-md col-span-3 grid grid-cols-4 cursor-pointer">
                 <button
                   className="border-gray-600 border-r-[1px] col-span-1"
                   onClick={() => {
@@ -329,11 +346,11 @@ const ProductPage = () => {
                   className="bg-redAccent col-span-1"
                   onClick={() => setQuantity((prev) => prev + 1)}
                 >
-                  <AddIcon className="text-white" />
+                  <AddIcon className="text-white cursor-pointer" />
                 </button>
               </div>
               <button
-                className="bg-redAccent text-white w-full h-11 shadow-lg rounded-md col-span-4 "
+                className="bg-redAccent text-white w-full h-11 shadow-lg rounded-md col-span-4 cursor-pointer"
                 onClick={() => toggleAddToCart("large")}
               >
                 Add to Cart
@@ -401,7 +418,7 @@ const ProductPage = () => {
       {isSuccess && (
         <RelatedItems category={product?.category} id={product?._id} />
       )}
-      <div className="fixed bottom-3 right-0 w-[100%] px-5 grid grid-cols-7 gap-4 md:hidden">
+      <div className="fixed bottom-3 right-0 w-[100%] px-5 grid grid-cols-7 gap-4 md:hidden ">
         <div className="border-[1px] bg-white border-gray-600  w-full h-10 shadow-lg rounded-md col-span-3 grid grid-cols-4">
           <button
             className="border-gray-600 border-r-[1px] col-span-1"
@@ -420,11 +437,11 @@ const ProductPage = () => {
             className="bg-redAccent col-span-1"
             onClick={() => setQuantity((prev) => prev + 1)}
           >
-            <AddIcon className="text-white" />
+            <AddIcon className="text-white cursor-pointer" />
           </button>
         </div>
         <button
-          className="bg-redAccent text-white w-full h-10 shadow-lg rounded-md col-span-4 "
+          className="bg-redAccent text-white w-full h-10 shadow-lg rounded-md col-span-4 cursor-pointer"
           onClick={() => toggleAddToCart("mobile")}
         >
           Add to Cart
