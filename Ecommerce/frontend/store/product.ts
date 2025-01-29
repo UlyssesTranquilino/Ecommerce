@@ -151,7 +151,8 @@ export const useUserStore = create(
       setCurrentUser: (user: any) => set({ currentUser: user }),
       updateUser: async (user: any) => {
         try {
-          const currentUser = get().currentUser;
+          let currentUser = get().currentUser;
+          currentUser = normalizeUser(currentUser);
 
           const res = await fetch(
             `http://localhost:5000/user/${currentUser?._id}`,
