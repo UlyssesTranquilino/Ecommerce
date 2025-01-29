@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "../CSS/Categories.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -13,6 +13,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -22,7 +23,6 @@ import { Product } from "../Intefaces/Product";
 import { useProductStore } from "../../store/product";
 
 //MUI
-import { CircularProgress } from "@mui/material";
 import Rating from "@mui/material/Rating";
 
 //COMPONENTS
@@ -34,6 +34,15 @@ import Drawer from "@mui/material/Drawer";
 
 import Divider from "@mui/material/Divider";
 import classNames from "classnames";
+
+//SKELETON
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
+//GSAP
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+gsap.registerPlugin(useGSAP);
 
 const Search = () => {
   const navigate = useNavigate();
@@ -318,6 +327,31 @@ const Search = () => {
     </Box>
   );
 
+  const container = useRef<HTMLDivElement>(null);
+  const { contextSafe } = useGSAP({ scope: container });
+
+  useEffect(() => {
+    if (searchProduct.length > 0) showSearchAnimation();
+    else closeSearch();
+  }, [searchProduct]);
+
+  const showSearchAnimation = contextSafe(() => {
+    gsap.to(".btn-close", {
+      opacity: 1,
+      duration: 0.3,
+      scale: 1.1,
+      ease: "power2.inOut",
+    });
+  });
+
+  function closeSearch() {
+    gsap.to(".btn-close", {
+      opacity: 0,
+      duration: 0.3,
+      scale: 1,
+      ease: "power2.inOut",
+    });
+  }
   return (
     <div className="mt-10 flex-col justify-center align-items-center max-w-[1200px] w-[90%] m-auto ">
       <div className="flex items-center gap-3">
@@ -330,7 +364,7 @@ const Search = () => {
           <ArrowBackIcon fontSize="small" />
         </div>
         <div
-          className="h rounded-l-lg flex justify-between bg-blue-gray-50"
+          className=" rounded-l-lg flex justify-between items-center bg-blue-gray-50"
           style={{ width: "90%", margin: "auto" }}
         >
           <input
@@ -343,12 +377,24 @@ const Search = () => {
             className="bg-blue-gray-50 h-9 w-4/5 focus:outline-none rounded-l-lg ml-5 mt-[3px]"
           ></input>
 
-          <button
-            onClick={handleSearch}
-            className="bg-redAccent text-textPrimary w-12 sm:w-16 h-10 rounded-tr-md rounded-br-md "
-          >
-            <SearchIcon style={{ color: "white" }} />
-          </button>
+          <div className="flex items-center" ref={container}>
+            <button
+              onClick={() => {
+                setSearchProduct("");
+                closeSearch();
+              }}
+              className="btn-close w-4 h-4 mr-3 bg-gray-500 rounded-full flex items-center justify-center opacity-0"
+            >
+              <CloseIcon className="scale-50 text-white" />
+            </button>
+
+            <button
+              onClick={handleSearch}
+              className="bg-redAccent text-textPrimary w-12 sm:w-16 h-10 rounded-tr-md rounded-br-md "
+            >
+              <SearchIcon style={{ color: "white" }} />
+            </button>
+          </div>
         </div>
 
         <div
@@ -367,14 +413,28 @@ const Search = () => {
       </Drawer>
 
       {isFetching ? (
-        <div className="flex justify-center mt-24">
-          <CircularProgress sx={{ color: "#DB4444" }} />
+        <div className=" flex-col justify-center align-items-center max-w-[1200px] m-auto ">
+          <Skeleton height={20} width={200} className="mt-6" />
+          <Skeleton height={45} width={280} className="mt-5" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mb-14">
+            {/* Render skeletons when loading */}
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={`skeleton-${index + length}`}
+                className="flex flex-col mt-24"
+              >
+                <Skeleton className="rounded-t-lg p-auto h-[250px] sm:h-[300px] md:h[150px] " />
+                <Skeleton height={20} className="mt-2" />
+                <Skeleton height={20} width="34%" className="mt-2" />
+              </div>
+            ))}
+          </div>{" "}
         </div>
       ) : productsToShow?.length >= 1 ? (
         <div>
           <div className="mt-5 text-sm">
             Search Results for:{" "}
-            <span className="text-redAccent">"{searchProduct}"</span>
+            <span className="text-redAccent">"{searchItem}"</span>
           </div>
           <div className="flex justify-start items-center mt-5">
             <h1 className="mr-3">Sort by:</h1>

@@ -44,29 +44,37 @@ const Navbar = () => {
           </Link>
         )}
 
-        <Link to={"/wishlist"}>
-          <div className=" relative">
-            {!isWishlistActive && (currentUser?.wishlists?.length ?? 0) > 0 && (
-              <div className="bg-redAccent absolute left-3 rounded-full w-4 h-4 flex items-center justify-center">
-                <p className="text-white text-xs">
-                  {currentUser?.wishlists.length}
-                </p>
-              </div>
-            )}
-            <button
-              className={`mr-3 ${
-                isWishlistActive ? "text-redAccent" : "text-white"
-              }`}
-            >
-              {isWishlistActive ? (
-                <FavoriteIcon className="text-redAccent" />
-              ) : (
-                <FavoriteBorderIcon />
-              )}
+        {currentUser ? (
+          <Link to={"/wishlist"}>
+            <div className=" relative">
+              {!isWishlistActive &&
+                (currentUser?.wishlists?.length ?? 0) > 0 && (
+                  <div className="bg-redAccent absolute left-3 rounded-full w-4 h-4 flex items-center justify-center">
+                    <p className="text-white text-xs">
+                      {currentUser?.wishlists.length}
+                    </p>
+                  </div>
+                )}
+              <button
+                className={`mr-3 ${
+                  isWishlistActive ? "text-redAccent" : "text-white"
+                }`}
+              >
+                {isWishlistActive ? (
+                  <FavoriteIcon className="text-redAccent" />
+                ) : (
+                  <FavoriteBorderIcon />
+                )}
+              </button>
+            </div>
+          </Link>
+        ) : (
+          <Link to="/signin">
+            <button className="mr-3">
+              <FavoriteBorderIcon />
             </button>
-          </div>
-        </Link>
-
+          </Link>
+        )}
         <Link to="/cart">
           <div className="relative">
             {!isCartActive && (currentUser?.carts?.length ?? 0) > 0 && (

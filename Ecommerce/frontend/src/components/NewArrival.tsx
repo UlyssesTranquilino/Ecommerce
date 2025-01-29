@@ -5,6 +5,7 @@ import AsusTUF from "../../src/assets/ASUS_TUF.png";
 import Appliences from "../../src/assets/Appliences.png";
 
 import { Link } from "react-router";
+
 const NewArrival = () => {
   return (
     <div>

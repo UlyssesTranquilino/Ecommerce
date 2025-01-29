@@ -4,7 +4,7 @@ import EmptyCartImage from "../assets/Images/Empty Cart.png";
 import CircularProgress from "@mui/material/CircularProgress";
 
 //TOASTER
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useProductStore, useUserStore } from "../../store/product";
 
 import { Checkbox } from "@mui/material";
@@ -148,7 +148,9 @@ const CartPage = () => {
     );
     setCartItems(updatedCartItems);
     recalculateSubtotal(updatedCartItems);
-
+    toast.success(
+      `${checkItems?.length === 1 ? "Product" : "Products"} removed from cart!`
+    );
     console.log("MESSAGE STRINGS: ", checkItems);
   };
 
@@ -374,18 +376,18 @@ const CartPage = () => {
           <img
             src={EmptyCartImage} // Renamed for clarity
             alt="Empty Cart"
-            className="w-64 mt-20"
+            className="w-64 mt-20 md:w-96"
           />
           <div className="text-center mt-10">
-            <h1 className="font-extrabold text-redAccent text-lg">
+            <h1 className="font-extrabold text-redAccent text-lg md:text-xl">
               Your Cart is Empty!
             </h1>
-            <p className="p-3 w-56 text-gray-700 text-sm">
+            <p className="p-3 w-56 text-gray-700 text-sm md:text-md">
               Start shopping to add items to your cart.
             </p>
             <div className="mt-10">
               <Link to="/">
-                <button className="bg-redAccent text-white py-3 px-7 rounded-sm text-sm hover:shadow-md">
+                <button className="bg-redAccent text-white py-3 px-7 rounded-sm text-sm hover:shadow-md md:text-md">
                   Start Shopping
                 </button>
               </Link>

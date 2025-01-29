@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import WishlistCard from "../components/WishlistCard";
 import EmptyWishlistImage from "../assets/Images/Empty Wishlist.png";
-import CircularProgress from "@mui/material/CircularProgress";
 
 //TOASTER
 import toast, { Toaster } from "react-hot-toast";
 import { useProductStore, useUserStore } from "../../store/product";
+
+//SKELETON
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const WishlistPage = () => {
   const navigate = useNavigate();
@@ -116,8 +119,15 @@ const WishlistPage = () => {
       />
 
       {isFetching ? (
-        <div className="flex justify-center mt-24 pt-24">
-          <CircularProgress sx={{ color: "#DB4444" }} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
+          {currentUser.wishlists.map((_: string, index: number) => (
+            <div key={`skeleton-${index}`} className="flex flex-col mt-24">
+              <Skeleton className="rounded-t-lg p-auto h-[250px] sm:h-[300px] md:h[150px] " />
+              <Skeleton height={20} className="mt-2" />
+              <Skeleton height={35} className="mt-2" />
+              <Skeleton height={15} width="40%" className="mt-2" />
+            </div>
+          ))}
         </div>
       ) : wishlistItems.length > 0 ? (
         <div>
@@ -148,18 +158,18 @@ const WishlistPage = () => {
           <img
             src={EmptyWishlistImage} // Renamed for clarity
             alt="Empty Wishlist"
-            className="w-40 mt-20"
+            className="w-40 mt-20  md:w-60"
           />
-          <div className="text-center mt-10">
-            <h1 className="font-extrabold text-redAccent text-lg">
+          <div className="flex flex-col items-center justify-centertext-center mt-10">
+            <h1 className="font-extrabold text-redAccent text-lg md:text-xl">
               Your Wishlist is Empty!
             </h1>
-            <p className="p-3 w-56 text-gray-700 text-sm">
+            <p className="p-3 w-56 text-center text-gray-700 text-sm md:text-md">
               Find something you love and add it here!
             </p>
             <div className="mt-10">
               <Link to="/">
-                <button className="bg-redAccent text-white py-3 px-7 rounded-sm text-sm hover:shadow-md">
+                <button className="bg-redAccent text-white py-3 px-7 rounded-sm text-sm hover:shadow-md md:text-md">
                   Start Shopping
                 </button>
               </Link>

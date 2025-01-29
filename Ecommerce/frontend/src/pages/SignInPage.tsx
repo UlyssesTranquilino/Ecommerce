@@ -7,6 +7,9 @@ import { useUserStore } from "../../store/product";
 
 import cartSignin from "../assets/Images/Cart.png";
 
+//TOASTER
+import toast, { Toaster } from "react-hot-toast";
+
 const SignInPage = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -26,7 +29,10 @@ const SignInPage = () => {
     }
 
     axios
-      .post("http://localhost:5000/user/signin", { email, password })
+      .post("http://localhost:5000/user/signin", {
+        email,
+        password,
+      })
       .then((result) => {
         if (result.data.success) {
           setIsSuccess(true);
@@ -37,8 +43,18 @@ const SignInPage = () => {
           setCurrentUser(decodedToken);
           console.log("Decoded User Info: ", decodedToken);
 
-          alert("Logged in successfully");
-          navigate("/");
+          toast
+            .promise(
+              new Promise((resolve) => setTimeout(resolve, 2000)), // Simulating async sign-in
+              {
+                loading: "Signing in...", // Updated from 'loading' (deprecated)
+                success: "Successfully signed in!",
+                error: "❌ Error signing in",
+              }
+            )
+            .then(() => {
+              setTimeout(() => navigate("/"), 700); // Small delay after toast
+            });
         } else {
           setIsSuccess(false);
           setMessage("Unexpected response from the server.");
@@ -55,6 +71,19 @@ const SignInPage = () => {
 
   return (
     <div className="mt-10 w-[90%] m-auto max-w-[1200px] md:flex ">
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          // Define default options
+          className: "",
+          duration: 3000,
+          style: {
+            background: "white",
+            color: "black",
+          },
+        }}
+      />
+
       <div className="border-2 md:w-full border-gray-200 shadow-md md:shadow-none md:border-0 p-5 rounded-lg max-w-[400px] m-auto h-[400px] md:mt-20">
         <div className="mb-12">
           <h1 className="text-2xl text-redAccent font-semibold">

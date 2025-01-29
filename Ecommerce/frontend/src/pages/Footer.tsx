@@ -3,6 +3,7 @@ import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { useUserStore } from "../../store/product";
 import { Link } from "react-router";
+
 const Footer = () => {
   const { currentUser } = useUserStore();
   const [email, setEmail] = useState("");
@@ -30,12 +31,12 @@ const Footer = () => {
           <ArrowUpwardIcon className="text-black" />
         </div>
         <div className="mt-10 md:mt-0">
-          <div className="flex gap-10 ">
+          <div className="flex gap-10 flex-col md:flex-row">
             <div>
-              <h1 className="font-[600]">Exclusive</h1>
-              <p className="my-3">Subsribe</p>
-
               <div>
+                <h1 className="font-[600]">Exclusive</h1>
+                <p className="my-3">Subsribe</p>
+
                 <p className="text-sm mb-2">Get 10% off your first order</p>
                 <div className="rounded-lg flex items-center justify-between border-[1px] border-white text-gray-400 w-56">
                   <input
@@ -71,7 +72,11 @@ const Footer = () => {
           <div className="mt-7 md:mt-5">
             <h1>Account</h1>
             <div className="text-sm flex flex-col mt-4 gap-3">
-              <p className="cursor-pointer hover:underline">My Account</p>
+              {currentUser && (
+                <Link to="/account">
+                  <p className="cursor-pointer hover:underline">My Account</p>
+                </Link>
+              )}
 
               {!currentUser && (
                 <Link to="/signin">
@@ -84,9 +89,15 @@ const Footer = () => {
                 <p className="cursor-pointer hover:underline">Cart</p>
               </Link>
 
-              <Link to="/wishlist">
-                <p className="cursor-pointer hover:underline">Wishlist</p>
-              </Link>
+              {currentUser ? (
+                <Link to="/wishlist">
+                  <p className="cursor-pointer hover:underline">Wishlist</p>
+                </Link>
+              ) : (
+                <Link to="/signin">
+                  <p className="cursor-pointer hover:underline">Wishlist</p>
+                </Link>
+              )}
             </div>
           </div>
         </div>

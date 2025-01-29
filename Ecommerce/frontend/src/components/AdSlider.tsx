@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import Slider from "react-slick";
 
@@ -19,8 +20,14 @@ import Shipping from "./../../src/assets/BannerSlider/Shipping.png";
 import { useNavigate } from "react-router-dom";
 
 import "../CSS/AdSlider.css";
+
+//SKELETON
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 const AdSlider = () => {
   const navigate = useNavigate();
+  const isMediumBelow = useMediaQuery({ query: "(max-width: 767px)" });
 
   const settings = {
     dots: true,
@@ -29,70 +36,107 @@ const AdSlider = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
+    arrows: false,
   };
 
-  const isMediumBelow = useMediaQuery({ query: "(max-width: 767px)" });
+  // State to track when all images are loaded
+  const [loaded, setLoaded] = useState(false);
+
+  // List of all images
+  const images = isMediumBelow
+    ? [
+        SaleMobile,
+        ShippingMobile,
+        IphoneMobile,
+        ControllerMobile,
+        HeadphonesMobile,
+      ]
+    : [Sale, Shipping, Iphone, Controller, Headphones];
+
+  useEffect(() => {
+    // Preload all images
+    const loadImage = (src: string) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = resolve;
+      });
+    };
+
+    const loadImages = async () => {
+      const promises = images.map(loadImage);
+      await Promise.all(promises);
+      setLoaded(true); // Set loaded to true once all images are loaded
+    };
+
+    loadImages();
+  }, [images]);
 
   return (
-    <div className="w-[99%] m-auto">
-      <Slider {...settings}>
-        <div
-          className="ad-sale"
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          {isMediumBelow ? (
-            <img src={SaleMobile} alt="Sale Banner Mobile" />
-          ) : (
-            <img src={Sale} alt="Sale Banner" />
-          )}
-        </div>
-        <div
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          {isMediumBelow ? (
-            <img src={ShippingMobile} alt="Sale Banner Mobile" />
-          ) : (
-            <img src={Shipping} alt="Sale Banner" />
-          )}
-        </div>
-        <div
-          onClick={() => {
-            navigate("product/67614cc70e031f9147919e22");
-          }}
-        >
-          {isMediumBelow ? (
-            <img src={IphoneMobile} alt="Sale Banner Mobile" />
-          ) : (
-            <img src={Iphone} alt="Sale Banner" />
-          )}
-        </div>
-        <div
-          onClick={() => {
-            navigate("product/67614cc70e031f9147919e15");
-          }}
-        >
-          {isMediumBelow ? (
-            <img src={ControllerMobile} alt="Sale Banner Mobile" />
-          ) : (
-            <img src={Controller} alt="Sale Banner" />
-          )}
-        </div>
-        <div
-          onClick={() => {
-            navigate("category/audio");
-          }}
-        >
-          {isMediumBelow ? (
-            <img src={HeadphonesMobile} alt="Sale Banner Mobile" />
-          ) : (
-            <img src={Headphones} alt="Sale Banner" />
-          )}
-        </div>
-      </Slider>
+    <div className="w-[100%] m-auto">
+      {loaded ? (
+        <Slider {...settings}>
+          {/* Slide 1 */}
+          <div
+            className="ad-sale"
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            <img src={isMediumBelow ? SaleMobile : Sale} alt="Sale Banner" />
+          </div>
+
+          {/* Slide 2 */}
+          <div
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            <img
+              src={isMediumBelow ? ShippingMobile : Shipping}
+              alt="Shipping Banner"
+            />
+          </div>
+
+          {/* Slide 3 */}
+          <div
+            onClick={() => {
+              navigate("product/67614cc70e031f9147919e22");
+            }}
+          >
+            <img
+              src={isMediumBelow ? IphoneMobile : Iphone}
+              alt="iPhone Banner"
+            />
+          </div>
+
+          {/* Slide 4 */}
+          <div
+            onClick={() => {
+              navigate("product/67614cc70e031f9147919e15");
+            }}
+          >
+            <img
+              src={isMediumBelow ? ControllerMobile : Controller}
+              alt="Controller Banner"
+            />
+          </div>
+
+          {/* Slide 5 */}
+          <div
+            onClick={() => {
+              navigate("category/audio");
+            }}
+          >
+            <img
+              src={isMediumBelow ? HeadphonesMobile : Headphones}
+              alt="Headphones Banner"
+            />
+          </div>
+        </Slider>
+      ) : (
+        <Skeleton className="rounded-t-lg p-auto h-[150px] sm:h-[300px] md:h-[250px] lg:h-[370px]  " />
+      )}
     </div>
   );
 };

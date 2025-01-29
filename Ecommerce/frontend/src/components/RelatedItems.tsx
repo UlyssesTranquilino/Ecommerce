@@ -4,7 +4,10 @@ import ProductCard from "../components/ProductCard";
 //INTERFACES
 import { Product } from "../Intefaces/Product";
 //MUI
-import CircularProgress from "@mui/material/CircularProgress";
+
+//SKELETON
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 const RelatedItems = ({ category, id }: any) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [categoryProduct, setCategoryProduct] = useState<Product[]>([]);
@@ -51,7 +54,7 @@ const RelatedItems = ({ category, id }: any) => {
               (product: Product) =>
                 product._id != id && (
                   <div key={product._id} onClick={handleProductClick}>
-                    <Link to={`/product/${product._id}`}>
+                    <Link to={`/product/${product._id}`} key={product._id}>
                       <ProductCard
                         _id={product._id}
                         image={product.image}
@@ -76,8 +79,17 @@ const RelatedItems = ({ category, id }: any) => {
           </div>
         </div>
       ) : (
-        <div className="flex justify-center mt-24">
-          <CircularProgress sx={{ color: "#DB4444" }} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div
+              key={`skeleton-${index + length}`}
+              className="flex flex-col mt-24"
+            >
+              <Skeleton className="rounded-t-lg p-auto h-[250px] sm:h-[300px] md:h[150px] " />
+              <Skeleton height={20} className="mt-2" />
+              <Skeleton height={20} width="34%" className="mt-2" />
+            </div>
+          ))}
         </div>
       )}
     </div>

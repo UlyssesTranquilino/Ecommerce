@@ -5,13 +5,16 @@ import { useProductStore } from "../../store/product";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import CircularProgress from "@mui/material/CircularProgress";
+
 //RATING MUI ICONS
 import Rating from "@mui/material/Rating";
 
 //LINK
 import { Link } from "react-router-dom";
 
+//SKELETON
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 const AllProducts = () => {
   interface Product {
     _id: string;
@@ -141,62 +144,69 @@ const AllProducts = () => {
         </div>
       )}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
-        {productsToShow.length > 0 ? (
-          productsToShow.map((product: Product) => (
-            <Link to={`/product/${product._id}`} key={product._id}>
-              <div className="rounded-lg bg-white flex-col relative border-redAccent hover:shadow-md cursor-pointer hover:translate-y-[-4px] transition-transform duration-200 ease-in-out ">
-                <div className="rounded-t-lg p-auto h-[300px] flex items-center justify-center">
-                  <img
-                    src={product.image}
-                    alt={product.title}
-                    className="w-auto h-auto object-cover"
-                  />
-                </div>
-                <div className="mt-5 p-3 pb-0">
-                  <h1 className="font-medium line-clamp-2">{product.title}</h1>
-                  <div className="mt-3 flex ">
-                    {product.discount ? (
-                      <>
-                        <p className="font-medium text-redAccent mr-2">
-                          $
-                          {(
-                            product.price -
-                            product.price * (product.discount / 100)
-                          )
-                            .toFixed(2)
-                            .toString()}
-                        </p>
-                        <p className="font-medium text-gray-500 line-through">
+        {productsToShow.length > 0
+          ? productsToShow.map((product: Product) => (
+              <Link to={`/product/${product._id}`} key={product._id}>
+                <div className="rounded-lg bg-white flex-col relative border-redAccent hover:shadow-md cursor-pointer hover:translate-y-[-4px] transition-transform duration-200 ease-in-out ">
+                  <div className="rounded-t-lg p-auto h-[300px] flex items-center justify-center">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="w-auto h-auto object-cover"
+                    />
+                  </div>
+                  <div className="mt-5 p-3 pb-0">
+                    <h1 className="font-medium line-clamp-2">
+                      {product.title}
+                    </h1>
+                    <div className="mt-3 flex ">
+                      {product.discount ? (
+                        <>
+                          <p className="font-medium text-redAccent mr-2">
+                            $
+                            {(
+                              product.price -
+                              product.price * (product.discount / 100)
+                            )
+                              .toFixed(2)
+                              .toString()}
+                          </p>
+                          <p className="font-medium text-gray-500 line-through">
+                            ${product.price.toString()}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="font-medium text-redAccent">
                           ${product.price.toString()}
                         </p>
-                      </>
-                    ) : (
-                      <p className="font-medium text-redAccent">
-                        ${product.price.toString()}
-                      </p>
-                    )}
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-1 ml-2.5 mb-3 flex">
+                    <Rating
+                      name="half-rating-read"
+                      defaultValue={product.rating}
+                      precision={0.5}
+                      readOnly
+                      size="small"
+                    />
+                    <p className="font-medium text-[#808080] text-sm ml-2">
+                      ({product.ratingCount})
+                    </p>
                   </div>
                 </div>
-                <div className="mt-1 ml-2.5 mb-3 flex">
-                  <Rating
-                    name="half-rating-read"
-                    defaultValue={product.rating}
-                    precision={0.5}
-                    readOnly
-                    size="small"
-                  />
-                  <p className="font-medium text-[#808080] text-sm ml-2">
-                    ({product.ratingCount})
-                  </p>
-                </div>
+              </Link>
+            ))
+          : Array.from({ length: 16 }).map((_, index) => (
+              <div
+                key={`skeleton-${index + length}`}
+                className="flex flex-col mt-24"
+              >
+                <Skeleton className="rounded-t-lg p-auto h-[250px] sm:h-[300px] md:h[150px] " />
+                <Skeleton height={20} className="mt-2" />
+                <Skeleton height={20} width="34%" className="mt-2" />
               </div>
-            </Link>
-          ))
-        ) : (
-          <div className="flex justify-center mt-24 col-span-2 md:col-span-4">
-            <CircularProgress sx={{ color: "#DB4444" }} />
-          </div>
-        )}
+            ))}
       </div>
 
       {productsToShow.length > 0 && !viewAllClicked && (

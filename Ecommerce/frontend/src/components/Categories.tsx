@@ -19,7 +19,6 @@ import { Link } from "react-router-dom";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import CircularProgress from "@mui/material/CircularProgress";
 
 //MUI ICONS
 
@@ -31,6 +30,10 @@ import TvIcon from "@mui/icons-material/Tv";
 import KitchenOutlinedIcon from "@mui/icons-material/KitchenOutlined";
 //Zustand
 import { useProductStore } from "../../store/product";
+
+//SKELETON
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Categories = () => {
   const handleCategoryClick = (categoryName: string) => {
@@ -200,6 +203,8 @@ const Categories = () => {
 
     setProductsToShow(sortedProducts);
   };
+
+  // {productsToShow.length == 0 ? (
   return (
     <div>
       <div className="flex items-center">
@@ -242,8 +247,20 @@ const Categories = () => {
       </div>
 
       {productsToShow.length == 0 ? (
-        <div className="flex justify-center mt-24">
-          <CircularProgress sx={{ color: "#DB4444" }} />
+        <div className="mt-10 flex-col justify-center align-items-center max-w-[1200px] m-auto ">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mt-14">
+            {/* Render skeletons when loading */}
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={`skeleton-${index + length}`}
+                className="flex flex-col mt-24"
+              >
+                <Skeleton className="rounded-t-lg p-auto h-[250px] sm:h-[300px] md:h[150px] " />
+                <Skeleton height={20} className="mt-2" />
+                <Skeleton height={20} width="34%" className="mt-2" />
+              </div>
+            ))}
+          </div>{" "}
         </div>
       ) : (
         <div className="flex justify-end items-center mt-14">

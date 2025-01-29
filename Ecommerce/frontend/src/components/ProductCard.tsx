@@ -33,7 +33,7 @@ const ProductCard = (product: {
       <div className="rounded-t-lg p-auto h-[250px] sm:h-[300px] md:h[150px] flex items-center justify-center">
         <img
           src={product.image}
-          alt={typeof product.title === "string" ? product.title : undefined}
+          alt={typeof product.title === "string" ? product.title : ""}
           className="w-auto h-auto object-cover"
         />
       </div>
