@@ -25,7 +25,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserCartHandler = exports.updateUserCartHandler = exports.addUserCartHandler = exports.deleteUserWishlistHanlder = exports.addUserWishlistHandler = exports.SignUpUserHandler = exports.SignInUserHandler = exports.updateUserDetailsHandler = exports.getUserDetailsHandler = void 0;
 const user_model_1 = __importDefault(require("../models/user.model"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt = require("jsonwebtoken");
 const getUserDetailsHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -46,12 +46,12 @@ const updateUserDetailsHandler = (req, res) => __awaiter(void 0, void 0, void 0,
         const user = yield user_model_1.default.findById(id).select("+password");
         console.log("USER: ", user);
         if (user) {
-            const isMatch = yield bcrypt_1.default.compare(password, user.password);
+            const isMatch = yield bcryptjs_1.default.compare(password, user.password);
             if (isMatch) {
                 // Hash the new password
                 const saltRounds = 10;
-                const salt = yield bcrypt_1.default.genSalt(saltRounds);
-                const hashedPassword = yield bcrypt_1.default.hash(newPassword, salt);
+                const salt = yield bcryptjs_1.default.genSalt(saltRounds);
+                const hashedPassword = yield bcryptjs_1.default.hash(newPassword, salt);
                 // Update user fields
                 user.password = hashedPassword;
                 user.name = name || user.name;
@@ -83,7 +83,7 @@ const SignInUserHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const user = yield user_model_1.default.findOne({ email }).select("+password");
         if (user) {
             // Verify password
-            const isMatch = yield bcrypt_1.default.compare(password, user.password);
+            const isMatch = yield bcryptjs_1.default.compare(password, user.password);
             if (isMatch) {
                 const token = jwt.sign({
                     name: user.name,
@@ -114,9 +114,9 @@ const SignUpUserHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const _a = req.body, { password } = _a, rest = __rest(_a, ["password"]);
         // Generate salt
         const saltRounds = 10; // Adjust as needed
-        const salt = yield bcrypt_1.default.genSalt(saltRounds);
+        const salt = yield bcryptjs_1.default.genSalt(saltRounds);
         // Hash the password
-        const hashedPassword = yield bcrypt_1.default.hash(password, salt);
+        const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
         // Create user with hashed password
         const user = yield user_model_1.default.create(Object.assign(Object.assign({}, rest), { password: hashedPassword, salt }));
         res.status(201).json(user);

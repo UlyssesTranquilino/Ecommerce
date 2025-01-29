@@ -1,5 +1,5 @@
 import User from "../models/user.model";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import mongoose, { Schema, Document } from "mongoose";
 import { Request, Response } from "express";
 const jwt = require("jsonwebtoken");
