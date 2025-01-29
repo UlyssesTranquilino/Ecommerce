@@ -15,13 +15,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
 // import axios from "axios";
-// import Product from "../models/product.model"; // Ensure your path is correct
+const product_model_1 = __importDefault(require("../models/product.model")); // Ensure your path is correct
 dotenv_1.default.config();
 const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Connect to MongoDB
         yield mongoose_1.default.connect(process.env.MONGO_URI, {});
         console.log("MongoDB connected");
+        // const generateRandomRating = () => {
+        //   const isHighRating = Math.random() < 0.8; // 80% chance for 4-5 stars
+        //   if (isHighRating) {
+        //     return (Math.random() * 1 + 4).toFixed(1); // Random rating between 4 and 5
+        //   } else {
+        //     return (Math.random() * 2 + 2).toFixed(1); // Random rating between 2 and 4
+        //   }
+        // };
+        const products = yield product_model_1.default.find(); // Fetch all products
+        for (let product of products) {
+            product.stock = Math.floor(Math.random() * 100 + 10);
+            yield product.save();
+        }
         // Commented-out code for fetching and inserting products
         /*
         // Function to generate random rating and rating count

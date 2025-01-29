@@ -9,6 +9,10 @@ const wishlists = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    _id: {
+        type: String,
+        required: true,
+    },
     image: {
         type: String,
         required: true,

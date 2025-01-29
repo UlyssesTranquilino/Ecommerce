@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addWishlistHandler = exports.getWishlistsHandler = void 0;
+exports.deleteWishlistHandler = exports.addWishlistHandler = exports.getWishlistsHandler = void 0;
 const wishlist_model_1 = __importDefault(require("../models/wishlist.model"));
 const getWishlistsHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -41,6 +41,22 @@ const addWishlistHandler = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.addWishlistHandler = addWishlistHandler;
+const deleteWishlistHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        yield wishlist_model_1.default.findByIdAndDelete(id);
+        res
+            .status(200)
+            .json({ success: true, message: "Product Wishlist Deleted" });
+    }
+    catch (error) {
+        console.error("ERROR: ", error);
+        res
+            .status(404)
+            .json({ success: false, message: "Product Wishlist Not Found" });
+    }
+});
+exports.deleteWishlistHandler = deleteWishlistHandler;
 // export const deleteProductHandler = async (req: Request, res: Response) => {
 //   const { id } = req.params;
 //   try {
