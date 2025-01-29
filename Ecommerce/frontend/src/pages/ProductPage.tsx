@@ -67,7 +67,9 @@ const ProductPage = () => {
 
   //Fetching Single Product
   const fetchSingleProduct = async (id: string) => {
-    const res = await fetch(`http://localhost:5000/${id}`);
+    const res = await fetch(
+      `https://exclusive-ecommerce-app.onrender.com/${id}`
+    );
     const { data, success } = await res.json();
 
     setIsSuccess(success);
@@ -107,17 +109,13 @@ const ProductPage = () => {
       } else {
         ({ success, message } = await deleteUserWishlist(product, currentUser));
       }
-      if (success) {
-        console.log("SUCCESS ADDING WISHLIST");
-      } else {
-        console.log("ERROR ADDING WISHLIST: ");
+      if (!success) {
         console.error(message); // Handle error case
       }
     }
   };
 
   const [cartToggled, setCartToggled] = useState(false);
-  console.log(cartToggled);
 
   const toggleAddToCart = async (device: string) => {
     if (!currentUser) {

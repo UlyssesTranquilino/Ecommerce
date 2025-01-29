@@ -65,7 +65,6 @@ const CartPage = () => {
 
   useEffect(() => {
     // Logs cartItems after state is updated
-    console.log("CART ITEMS UPDATED: ", cartItems);
   }, [cartItems]);
 
   const [allChecked, setAllChecked] = useState(false);
@@ -140,7 +139,6 @@ const CartPage = () => {
   };
 
   const toggleDelete = () => {
-    console.log("CHECKED ITEMS: ", checkItems);
     deleteUserCart({ _id: checkItems });
 
     const updatedCartItems = cartItems.filter(
@@ -151,7 +149,6 @@ const CartPage = () => {
     toast.success(
       `${checkItems?.length === 1 ? "Product" : "Products"} removed from cart!`
     );
-    console.log("MESSAGE STRINGS: ", checkItems);
   };
 
   // Handle quantity increase

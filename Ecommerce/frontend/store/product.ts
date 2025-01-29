@@ -65,13 +65,16 @@ export const useProductStore = create<ProductStoreState>((set) => ({
   setProducts: (products) => set({ products }),
   updateProduct: async (productID, updatedProduct) => {
     try {
-      const res = await fetch(`http://localhost:5000/${productID}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedProduct),
-      });
+      const res = await fetch(
+        `https://exclusive-ecommerce-app.onrender.com/${productID}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedProduct),
+        }
+      );
 
       if (!res.ok) {
         // If the response status is not OK (e.g., 4xx or 5xx), throw an error
@@ -98,12 +101,14 @@ export const useProductStore = create<ProductStoreState>((set) => ({
     }
   },
   fetchProducts: async () => {
-    const res = await fetch("http://localhost:5000/");
+    const res = await fetch("https://exclusive-ecommerce-app.onrender.com/");
     const data = await res.json();
     set({ products: data.data });
   },
   fetchSingleProduct: async (productId) => {
-    const res = await fetch(`http://localhost:5000/${productId}`);
+    const res = await fetch(
+      `https://exclusive-ecommerce-app.onrender.com/${productId}`
+    );
     const data = await res.json();
     return data;
   },
@@ -111,13 +116,16 @@ export const useProductStore = create<ProductStoreState>((set) => ({
   // The addUser action, properly defined
   addUser: async (newUser) => {
     try {
-      const res = await fetch("http://localhost:5000/user/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
+      const res = await fetch(
+        "https://exclusive-ecommerce-app.onrender.com/user/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newUser),
+        }
+      );
 
       const data = await res.json();
 
@@ -155,7 +163,7 @@ export const useUserStore = create(
           currentUser = normalizeUser(currentUser);
 
           const res = await fetch(
-            `http://localhost:5000/user/${currentUser?._id}`,
+            `https://exclusive-ecommerce-app.onrender.com/user/${currentUser?._id}`,
             {
               method: "PUT",
               headers: {
@@ -171,7 +179,6 @@ export const useUserStore = create(
           }
 
           const data = await res.json();
-          console.log("DATA UPDATED: ", data);
 
           set({ currentUser: data.data });
 
@@ -187,7 +194,6 @@ export const useUserStore = create(
       addUserWishlist: async (product: any) => {
         let currentUser: User | null = get()?.currentUser;
         currentUser = normalizeUser(currentUser);
-        console.log("CURENT USER: ", currentUser);
 
         if (!currentUser) {
           console.error("No user logged in");
@@ -196,7 +202,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `http://localhost:5000/user/wishlist/${currentUser._id}`,
+            `https://exclusive-ecommerce-app.onrender.com/user/wishlist/${currentUser._id}`,
             {
               method: "POST",
               headers: {
@@ -236,7 +242,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `http://localhost:5000/user/wishlist/${currentUser._id}`,
+            `https://exclusive-ecommerce-app.onrender.com/user/wishlist/${currentUser._id}`,
             {
               method: "DELETE",
               headers: {
@@ -247,8 +253,6 @@ export const useUserStore = create(
           );
 
           const result = await response.json();
-
-          console.log("RESULT DELETE: ", result);
 
           if (!response.ok) {
             console.error("Error deleting from wishlist:", result.message);
@@ -281,7 +285,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `http://localhost:5000/user/cart/${currentUser._id}`,
+            `https://exclusive-ecommerce-app.onrender.com/user/cart/${currentUser._id}`,
             {
               method: "POST",
               headers: {
@@ -292,7 +296,6 @@ export const useUserStore = create(
           );
 
           const result = await response.json();
-          console.log("RESULT: ", result);
 
           if (!response.ok) {
             console.error("Add to Cart API Error:", result.message);
@@ -324,8 +327,6 @@ export const useUserStore = create(
         let currentUser: User | null = get()?.currentUser;
         currentUser = normalizeUser(currentUser);
 
-        console.log("ZUSTAND ", JSON.stringify(productID));
-
         if (!currentUser) {
           console.error("No user logged in");
           return { success: false, message: "Failed removing from cart" };
@@ -333,7 +334,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `http://localhost:5000/user/cart/${currentUser._id}`,
+            `https://exclusive-ecommerce-app.onrender.com/user/cart/${currentUser._id}`,
             {
               method: "DELETE",
               headers: {
@@ -344,7 +345,6 @@ export const useUserStore = create(
           );
 
           const result = await response.json();
-          console.log("RESULT DELETE: ", result);
 
           if (!response.ok) {
             console.error("Error deleting from cart:", result.message);
@@ -367,7 +367,6 @@ export const useUserStore = create(
         let currentUser: User | null = get()?.currentUser;
         currentUser = normalizeUser(currentUser);
 
-        console.log("PARTIA: ", product);
         if (!currentUser) {
           console.error("No user logged in");
           return {
@@ -379,7 +378,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `http://localhost:5000/user/cart/${currentUser._id}`,
+            `https://exclusive-ecommerce-app.onrender.com/user/cart/${currentUser._id}`,
             {
               method: "PUT",
               headers: {
@@ -390,7 +389,6 @@ export const useUserStore = create(
           );
 
           const result = await response.json();
-          console.log("RESULT FROM UPDATED: ", result);
 
           if (!response.ok) {
             console.error("Error adding to wishlist:", result.message);
@@ -404,8 +402,6 @@ export const useUserStore = create(
           set({
             currentUser: normalizeUser(result.data),
           });
-
-          console.log("CURRENT USER: ", currentUser.carts);
 
           return {
             success: true,

@@ -160,8 +160,6 @@ const Search = () => {
     setFilterActive(!!(filterRating ?? filterMinPrice ?? filterMaxPrice));
     setOpen(false); // Close the filter drawer
 
-    console.log("FILTER RATING: ", filterRating);
-
     // Always start filtering from the original products list
     let filteredProducts = products.filter(
       (product: any) =>

@@ -20,7 +20,6 @@ const WishlistPage = () => {
   const [isFetching, setIsFetching] = useState<boolean>(true); // Renamed from isLoading
 
   useEffect(() => {
-    console.log("CURRENT USER: ", currentUser);
     if (currentUser) {
       const fetchWishlistItems = async () => {
         try {
@@ -28,7 +27,7 @@ const WishlistPage = () => {
             currentUser.wishlists.map(async (itemID: string) => {
               try {
                 const data = await fetchSingleProduct(itemID);
-                console.log("WISHLIST DATA: ", data);
+
                 return data.data; // Return product data
               } catch (error) {
                 console.error(
@@ -42,7 +41,6 @@ const WishlistPage = () => {
 
           // Filter out any null values in case some products were not found
           setWishlistItems(fetchedItems.filter((item) => item !== null));
-          console.log("WISHLIST ITEMS: ", wishlistItems);
 
           setIsFetching(false);
         } catch (error) {
@@ -61,8 +59,6 @@ const WishlistPage = () => {
     const { success, message } = await deleteUserWishlist(product);
 
     if (success) {
-      console.log("PRODUCT REMOVED FROM WISHLIST");
-
       // Remove the deleted product from local state
       setWishlistItems((prevItems) =>
         prevItems.filter((item) => item._id !== product._id)

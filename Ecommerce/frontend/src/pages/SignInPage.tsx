@@ -29,7 +29,7 @@ const SignInPage = () => {
     }
 
     axios
-      .post("http://localhost:5000/user/signin", {
+      .post("https://exclusive-ecommerce-app.onrender.com/user/signin", {
         email,
         password,
       })
@@ -39,9 +39,8 @@ const SignInPage = () => {
           localStorage.setItem("token", result.data.user);
 
           const decodedToken = jwtDecode(result.data.user);
-          console.log("DECODED TOKEN: ", decodedToken);
+
           setCurrentUser(decodedToken);
-          console.log("Decoded User Info: ", decodedToken);
 
           toast
             .promise(
@@ -61,7 +60,6 @@ const SignInPage = () => {
         }
       })
       .catch((err) => {
-        console.log(err.response?.data || "Error occurred");
         setIsSuccess(false);
         setMessage(
           err.response?.data || "An error occurred. Please try again."

@@ -14,7 +14,7 @@ const RelatedItems = ({ category, id }: any) => {
 
   const fetchCategoryProduct = async () => {
     try {
-      const res = await fetch(`http://localhost:5000`);
+      const res = await fetch(`https://exclusive-ecommerce-app.onrender.com`);
       const { data, success } = await res.json();
       setIsSuccess(success);
       if (success) {

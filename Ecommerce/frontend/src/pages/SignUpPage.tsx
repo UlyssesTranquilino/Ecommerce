@@ -33,7 +33,6 @@ const SignUpPage = () => {
     if (success) {
       navigate("/signin");
     } else {
-      console.log(message);
       setMessage(message);
       setIsSuccess(false);
     }

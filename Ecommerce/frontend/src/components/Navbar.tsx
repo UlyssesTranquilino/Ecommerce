@@ -18,8 +18,6 @@ const Navbar = () => {
 
   const { currentUser } = useUserStore();
 
-  console.log("NAV BAR CURRENT USER: ", currentUser);
-
   return (
     <nav className="bg-black text-white h-14 flex items-center justify-between pl-5 md:px-4 md:pl-8">
       <div className="flex items-center">

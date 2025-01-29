@@ -54,8 +54,6 @@ const SettingsPage = () => {
       newPassword: newPassword,
     });
 
-    console.log("SUCCESS: ", success, "  MESSAGE: ", message);
-
     if (!success) {
       setIsSuccess(false);
       setMessage(message);
