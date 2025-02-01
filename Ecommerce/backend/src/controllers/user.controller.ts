@@ -105,7 +105,12 @@ export const SignUpUserHandler = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create user with hashed password
-    const user = await User.create({ ...rest, password: hashedPassword, salt });
+    const user = await User.create({
+      ...rest,
+      password: hashedPassword,
+      salt,
+      isAdmin: false,
+    });
 
     res.status(201).json(user);
   } catch (err) {

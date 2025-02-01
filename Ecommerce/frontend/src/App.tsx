@@ -11,6 +11,7 @@ import AccountPage from "./pages/AccountPage";
 import CartPage from "./pages/CartPage";
 import SettingsPage from "./pages/SettingsPage";
 import Search from "./pages/SearchPage";
+import Dashboard from "./pages/Admin/Dashboard";
 
 import { Route, Routes } from "react-router-dom";
 
@@ -35,6 +36,7 @@ function App() {
         <Route path="/account/settings" element={<SettingsPage />} />
         <Route path="/search/:searchItem" element={<Search />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/admin/:id" element={<Dashboard />} />
       </Routes>
 
       <Footer />

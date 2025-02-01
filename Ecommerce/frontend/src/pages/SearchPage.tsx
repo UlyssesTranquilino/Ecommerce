@@ -70,18 +70,20 @@ const Search = () => {
   const [productsToShow, setProductsToShow] = useState<Product[]>(products);
 
   useEffect(() => {
+    if (!products || products.length === 0) return; // Prevent filtering when products is empty or undefined
+
     if (searchItem) {
-      setSearchProduct(searchItem); // Update the searchProduct state with the URL param
+      setSearchProduct(searchItem);
       setProductsToShow(
         products.filter(
           (product: any) =>
-            product.title
+            (product?.title ?? "")
               .toLowerCase()
               .includes(searchItem?.toLowerCase() ?? "") ||
-            product.brand
+            (product?.brand ?? "")
               .toLowerCase()
               .includes(searchItem?.toLowerCase() ?? "") ||
-            product.category
+            (product?.category ?? "")
               .toLowerCase()
               .includes(searchItem?.toLowerCase() ?? "")
         )
@@ -149,24 +151,27 @@ const Search = () => {
   const [filterMaxPrice, setFilterMaxPrice] = useState<number | null>(null);
 
   const filterProducts = () => {
-    if (filterMinPrice && filterMaxPrice) {
-      if (filterMinPrice > filterMaxPrice) {
-        setErrorMessage("Max price must be greater than the min price.");
-        return;
-      }
+    if (filterMinPrice && filterMaxPrice && filterMinPrice > filterMaxPrice) {
+      setErrorMessage("Max price must be greater than the min price.");
+      return;
     }
 
-    // Determine if the filter is active
     setFilterActive(!!(filterRating ?? filterMinPrice ?? filterMaxPrice));
-    setOpen(false); // Close the filter drawer
+    setOpen(false);
 
-    // Always start filtering from the original products list
-    let filteredProducts = products.filter(
-      (product: any) =>
-        product.title.toLowerCase().includes(searchItem?.toLowerCase() ?? "") ||
-        product.brand.toLowerCase().includes(searchItem?.toLowerCase() ?? "") ||
-        product.category.toLowerCase().includes(searchItem?.toLowerCase() ?? "")
-    );
+    const normalizedSearch = searchItem?.toLowerCase()?.trim() ?? "";
+
+    let filteredProducts = products.filter((product: any) => {
+      const title = (product?.title ?? "").toLowerCase();
+      const brand = (product?.brand ?? "").toLowerCase();
+      const category = (product?.category ?? "").toLowerCase();
+
+      return (
+        title.includes(normalizedSearch) ||
+        brand.includes(normalizedSearch) ||
+        category.includes(normalizedSearch)
+      );
+    });
 
     // Apply rating filter
     if (filterRating) {
@@ -175,23 +180,19 @@ const Search = () => {
       );
     }
 
-    // Apply price range filters
-    if (filterMinPrice && filterMaxPrice) {
+    // Apply price filters
+    if (filterMinPrice !== null) {
       filteredProducts = filteredProducts.filter(
-        (product: any) =>
-          filterMinPrice <= product.price && product.price <= filterMaxPrice
+        (product: any) => product.price >= filterMinPrice
       );
-    } else if (filterMinPrice) {
-      filteredProducts = filteredProducts.filter(
-        (product: any) => filterMinPrice <= product.price
-      );
-    } else if (filterMaxPrice) {
+    }
+    if (filterMaxPrice !== null) {
       filteredProducts = filteredProducts.filter(
         (product: any) => product.price <= filterMaxPrice
       );
     }
 
-    setProductsToShow(filteredProducts); // Update the filtered products to display
+    setProductsToShow(filteredProducts);
   };
 
   const handleResetFilter = () => {
@@ -215,6 +216,7 @@ const Search = () => {
     );
 
     setOpen(false);
+    console.log("OPEN: ", open);
   };
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -253,6 +255,7 @@ const Search = () => {
               className="w-1/2 p-1 mt-2 border-[1px] border-gray-400 text-sm text-center"
               style={{ outline: "none" }}
               onChange={(e) => setFilterMinPrice(Number(e.target.value))}
+              min="0"
             />
             <div className="w-20 h-[1px] bg-gray-400" />
             <input
@@ -262,6 +265,7 @@ const Search = () => {
               className="w-1/2 p-1 mt-2 border-[1px] border-gray-400 text-sm text-center"
               style={{ outline: "none" }}
               onChange={(e) => setFilterMaxPrice(Number(e.target.value))}
+              min="0"
             />
           </div>
 

@@ -118,7 +118,7 @@ const SignUpUserHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
         // Hash the password
         const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
         // Create user with hashed password
-        const user = yield user_model_1.default.create(Object.assign(Object.assign({}, rest), { password: hashedPassword, salt }));
+        const user = yield user_model_1.default.create(Object.assign(Object.assign({}, rest), { password: hashedPassword, salt, isAdmin: false }));
         res.status(201).json(user);
     }
     catch (err) {

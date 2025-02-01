@@ -49,6 +49,11 @@ const userSchema = new mongoose_1.default.Schema({
         type: String,
         required: false,
     },
+    isAdmin: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
 }, { timestamps: true });
 // userSchema.pre("save", async function (next) {
 //   if (!this.isModified("password")) return next(); // Skip if password is not modified

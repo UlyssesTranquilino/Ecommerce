@@ -19,7 +19,7 @@ const Navbar = () => {
   const { currentUser } = useUserStore();
 
   return (
-    <nav className="bg-black text-white h-14 flex items-center justify-between pl-5 md:px-4 md:pl-8">
+    <nav className="bg-black text-white h-14 flex items-center justify-between pl-2 md:px-2 md:pl-4">
       <div className="flex items-center">
         {/* <button className="text-textPrimary mr-4 ml-4 flex items-center">
           <MenuIcon />

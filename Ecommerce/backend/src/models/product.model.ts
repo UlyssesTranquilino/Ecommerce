@@ -36,19 +36,22 @@ const productSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      required: false,
+      required: true,
     },
     discount: {
       type: Number,
       required: false,
+      default: 0,
     },
     rating: {
       type: Number,
       required: false,
+      default: 0,
     },
     ratingCount: {
       type: Number,
       required: false,
+      default: 0,
     },
   },
   { timestamps: true }
