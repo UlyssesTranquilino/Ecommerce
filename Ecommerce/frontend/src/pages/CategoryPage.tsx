@@ -22,7 +22,7 @@ const CategoryPage = () => {
 
   const fetchCategoryProduct = async () => {
     try {
-      const res = await fetch(`https://exclusive-ecommerce-app.onrender.com`);
+      const res = await fetch(`http://localhost:5000`);
       const { data, success } = await res.json();
       setIsSuccess(success);
 

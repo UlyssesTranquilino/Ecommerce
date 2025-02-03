@@ -17,6 +17,7 @@ interface Product {
   discount: number;
   rating: number;
   ratingCount: number;
+  stock: number;
 }
 
 interface User {
@@ -46,9 +47,14 @@ interface ProductStoreState {
     productId: string,
     updatedProduct: Partial<Product>
   ) => Promise<{ success: boolean; message: string }>;
-
+  addProduct: (
+    newProduct: Partial<Product>
+  ) => Promise<{ success: boolean; message: string }>;
   addUser: (
     newUser: Partial<User>
+  ) => Promise<{ success: boolean; message: string }>;
+  deleteProduct: (
+    productId: string
   ) => Promise<{ success: boolean; message: string }>;
 }
 
@@ -65,16 +71,13 @@ export const useProductStore = create<ProductStoreState>((set) => ({
   setProducts: (products) => set({ products }),
   updateProduct: async (productID, updatedProduct) => {
     try {
-      const res = await fetch(
-        `https://exclusive-ecommerce-app.onrender.com/${productID}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedProduct),
-        }
-      );
+      const res = await fetch(`http://localhost:5000/${productID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedProduct),
+      });
 
       if (!res.ok) {
         // If the response status is not OK (e.g., 4xx or 5xx), throw an error
@@ -101,31 +104,50 @@ export const useProductStore = create<ProductStoreState>((set) => ({
     }
   },
   fetchProducts: async () => {
-    const res = await fetch("https://exclusive-ecommerce-app.onrender.com/");
+    const res = await fetch("http://localhost:5000/");
     const data = await res.json();
     set({ products: data.data });
   },
   fetchSingleProduct: async (productId) => {
-    const res = await fetch(
-      `https://exclusive-ecommerce-app.onrender.com/${productId}`
-    );
+    const res = await fetch(`http://localhost:5000/${productId}`);
     const data = await res.json();
     return data;
   },
+  addProduct: async (newProduct) => {
+    console.log(newProduct);
+    try {
+      const res = await fetch("http://localhost:5000/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProduct),
+      });
 
+      const data = await res.json();
+      console.log("DATA: ", data);
+      if (data.errors) {
+        throw new Error("Failed to add product");
+      }
+
+      return { success: true, message: "✅ Product added!" };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || "Failed to add product",
+      };
+    }
+  },
   // The addUser action, properly defined
   addUser: async (newUser) => {
     try {
-      const res = await fetch(
-        "https://exclusive-ecommerce-app.onrender.com/user/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newUser),
-        }
-      );
+      const res = await fetch("http://localhost:5000/user/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
 
       const data = await res.json();
 
@@ -149,6 +171,34 @@ export const useProductStore = create<ProductStoreState>((set) => ({
       };
     }
   },
+  deleteProduct: async (productId) => {
+    try {
+      const res = await fetch(`http://localhost:5000/${productId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+      if (data.errors) {
+        throw new Error("Failed to delete product");
+      }
+
+      // Update the store by filtering out the deleted product
+      set((state) => ({
+        products: state.products.filter((product) => product._id !== productId),
+      }));
+
+      return { success: true, message: "✅ Product Deleted" };
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      return {
+        success: false,
+        message: (error as Error).message || "An unexpected error occurred",
+      };
+    }
+  },
 }));
 
 // User Store with persist
@@ -163,7 +213,7 @@ export const useUserStore = create(
           currentUser = normalizeUser(currentUser);
 
           const res = await fetch(
-            `https://exclusive-ecommerce-app.onrender.com/user/${currentUser?._id}`,
+            `http://localhost:5000/user/${currentUser?._id}`,
             {
               method: "PUT",
               headers: {
@@ -202,7 +252,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `https://exclusive-ecommerce-app.onrender.com/user/wishlist/${currentUser._id}`,
+            `http://localhost:5000/user/wishlist/${currentUser._id}`,
             {
               method: "POST",
               headers: {
@@ -242,7 +292,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `https://exclusive-ecommerce-app.onrender.com/user/wishlist/${currentUser._id}`,
+            `http://localhost:5000/user/wishlist/${currentUser._id}`,
             {
               method: "DELETE",
               headers: {
@@ -285,7 +335,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `https://exclusive-ecommerce-app.onrender.com/user/cart/${currentUser._id}`,
+            `http://localhost:5000/user/cart/${currentUser._id}`,
             {
               method: "POST",
               headers: {
@@ -334,7 +384,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `https://exclusive-ecommerce-app.onrender.com/user/cart/${currentUser._id}`,
+            `http://localhost:5000/user/cart/${currentUser._id}`,
             {
               method: "DELETE",
               headers: {
@@ -378,7 +428,7 @@ export const useUserStore = create(
 
         try {
           const response = await fetch(
-            `https://exclusive-ecommerce-app.onrender.com/user/cart/${currentUser._id}`,
+            `http://localhost:5000/user/cart/${currentUser._id}`,
             {
               method: "PUT",
               headers: {

@@ -29,7 +29,7 @@ const SignInPage = () => {
     }
 
     axios
-      .post("https://exclusive-ecommerce-app.onrender.com/user/signin", {
+      .post("http://localhost:5000/user/signin", {
         email,
         password,
       })

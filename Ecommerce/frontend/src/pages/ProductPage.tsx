@@ -67,9 +67,7 @@ const ProductPage = () => {
 
   //Fetching Single Product
   const fetchSingleProduct = async (id: string) => {
-    const res = await fetch(
-      `https://exclusive-ecommerce-app.onrender.com/${id}`
-    );
+    const res = await fetch(`http://localhost:5000/${id}`);
     const { data, success } = await res.json();
 
     setIsSuccess(success);
@@ -143,7 +141,7 @@ const ProductPage = () => {
         if (device == "mobile") onClickCartAnimation();
         toast("✅ Product added to cart!");
       } else {
-        toast("Failed added to cart!");
+        toast("Failed to add to cart!");
       }
     }
   };
@@ -233,7 +231,7 @@ const ProductPage = () => {
                   if (product) {
                     toggleWishlist(product);
                   }
-                  notifyWishlist("❤️ Added to Wishlist!");
+                  if (currentUser) notifyWishlist("❤️ Added to Wishlist!");
                 } else {
                   notifyWishlist("Removed to Wishlist!");
                   if (product?._id) {
@@ -271,7 +269,7 @@ const ProductPage = () => {
                         readOnly
                         size="small"
                       />
-                      <p className="opacity-50 text-sm ml-3">
+                      <p className="opacity-50 text-sm ml-3 ">
                         ({product?.ratingCount} Reviews)
                         <span className="ml-1 md:ml-3">|</span>
                       </p>
@@ -318,7 +316,7 @@ const ProductPage = () => {
                   </h1>
                 </div>
 
-                <div className="mt-0 grid ">
+                <div className="mt-0 grid mb-6">
                   {product?.color && (
                     <div className="mb-5">
                       <h1 className="font-semibold">Color</h1>
@@ -369,7 +367,8 @@ const ProductPage = () => {
                         if (product) {
                           toggleWishlist(product);
                         }
-                        notifyWishlist("❤️ Added to Wishlist!");
+                        if (currentUser)
+                          notifyWishlist("❤️ Added to Wishlist!");
                       } else {
                         notifyWishlist("Removed to Wishlist!");
                         if (product?._id) {

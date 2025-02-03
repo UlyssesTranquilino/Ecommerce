@@ -11,6 +11,9 @@ import AccountPage from "./pages/AccountPage";
 import CartPage from "./pages/CartPage";
 import SettingsPage from "./pages/SettingsPage";
 import Search from "./pages/SearchPage";
+import Dashboard from "./pages/Admin/Dashboard";
+import CreateProduct from "./components/Admin/CreateProduct";
+import AdminAllProducts from "./pages/Admin/AdminAllProducts";
 
 import { Route, Routes } from "react-router-dom";
 
@@ -35,6 +38,9 @@ function App() {
         <Route path="/account/settings" element={<SettingsPage />} />
         <Route path="/search/:searchItem" element={<Search />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/admin/:id" element={<Dashboard />} />
+        <Route path="/admin/create-product/:id" element={<Dashboard />} />
+        <Route path="/admin/all-products/:id" element={<AdminAllProducts />} />
       </Routes>
 
       <Footer />
