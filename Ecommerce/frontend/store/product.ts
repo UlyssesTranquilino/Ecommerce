@@ -53,6 +53,9 @@ interface ProductStoreState {
   addUser: (
     newUser: Partial<User>
   ) => Promise<{ success: boolean; message: string }>;
+  deleteProduct: (
+    productId: string
+  ) => Promise<{ success: boolean; message: string }>;
 }
 
 const normalizeUser = (user: any) => {
@@ -162,6 +165,34 @@ export const useProductStore = create<ProductStoreState>((set) => ({
       return { success: true, message: "User added successfully!" };
     } catch (error) {
       console.error("Error adding user:", error);
+      return {
+        success: false,
+        message: (error as Error).message || "An unexpected error occurred",
+      };
+    }
+  },
+  deleteProduct: async (productId) => {
+    try {
+      const res = await fetch(`http://localhost:5000/${productId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+      if (data.errors) {
+        throw new Error("Failed to delete product");
+      }
+
+      // Update the store by filtering out the deleted product
+      set((state) => ({
+        products: state.products.filter((product) => product._id !== productId),
+      }));
+
+      return { success: true, message: "✅ Product Deleted" };
+    } catch (error) {
+      console.error("Error deleting product:", error);
       return {
         success: false,
         message: (error as Error).message || "An unexpected error occurred",
