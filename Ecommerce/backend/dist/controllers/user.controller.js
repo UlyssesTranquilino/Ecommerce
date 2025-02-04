@@ -91,6 +91,7 @@ const SignInUserHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
                     id: user._id,
                     wishlists: user.wishlists,
                     carts: user.carts,
+                    isAdmin: user.isAdmin,
                 }, "expressoToken" // Replace with a strong secret key
                 );
                 res.json({ success: true, user: token });

@@ -75,6 +75,7 @@ export const SignInUserHandler = async (req: Request, res: Response) => {
             id: user._id,
             wishlists: user.wishlists,
             carts: user.carts,
+            isAdmin: user.isAdmin,
           },
           "expressoToken" // Replace with a strong secret key
         );
