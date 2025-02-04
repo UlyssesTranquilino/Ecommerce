@@ -39,19 +39,22 @@ const productSchema = new mongoose_1.default.Schema({
     },
     category: {
         type: String,
-        required: false,
+        required: true,
     },
     discount: {
         type: Number,
         required: false,
+        default: 0,
     },
     rating: {
         type: Number,
         required: false,
+        default: 0,
     },
     ratingCount: {
         type: Number,
         required: false,
+        default: 0,
     },
 }, { timestamps: true });
 const Product = mongoose_1.default.model("Product", productSchema);
