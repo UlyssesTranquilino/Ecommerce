@@ -17,6 +17,14 @@ const _dirname = path.resolve();
 // Create an Express application
 const app = express();
 
+app.use((req: Request, res: Response, next) => {
+  const url = req.originalUrl || "";
+  if (/(^|\/)(\.env(\.|$)|\.env\/)/i.test(url)) {
+    return res.sendStatus(404);
+  }
+  next();
+});
+
 // Specify the allowed origins
 // const allowedOrigins = [
 //   "http://localhost:5173",
