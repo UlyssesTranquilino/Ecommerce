@@ -7,8 +7,15 @@ dotenv.config();
 
 const connectDB = async () => {
   try {
+    const mongoUri = process.env.MONGO_URI;
+    if (!mongoUri || mongoUri.trim().length === 0) {
+      throw new Error(
+        "MONGO_URI is not set. Configure it as an environment variable in your deployment environment."
+      );
+    }
+
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGO_URI as string, {});
+    await mongoose.connect(mongoUri, {});
     console.log("MongoDB connected");
 
     // const generateRandomRating = () => {
